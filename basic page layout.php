@@ -23,7 +23,7 @@
 
 <body>
 
-
+<!-- edit by scott -->
 <!-- Page Begins Here -->
 <div data-role="page" id="home">
 
