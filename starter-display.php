@@ -10,9 +10,9 @@
 
 	<link rel="stylesheet" href="jquery.mobile-1.2.0.css" />
 
-	<link rel="stylesheet" href="style.css" /> //links to CSS style sheet
-	<link rel="apple-touch-icon" href="appicon.png" /> //file for app icon
-	<link rel="apple-touch-startup-image" href="upstart.png"> //file for startup image
+	<link rel="stylesheet" href="style.css" />
+	<link rel="apple-touch-icon" href="appicon.png" />
+	<link rel="apple-touch-startup-image" href="upstart.png">
 	
 	<script src="jquery-1.8.2.min.js"></script>
 	<script src="jquery.mobile-1.2.0.js"></script>
@@ -27,7 +27,7 @@
 
 	<!-- Header Begins Here -->
 	<div data-role="header">
-		<h1>Header Text Change</h1>
+		<h1>Display</h1>
 	</div>
 	<!-- Header Ends Here->
 	

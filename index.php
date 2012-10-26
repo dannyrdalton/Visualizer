@@ -34,9 +34,8 @@
 	
 	<!-- Content Begins Here -->
 	<div data-role="content">
-	<p><a href="starter-create.php" data-role="button">Start a Visualizer</a></p>
-	<p><a href="#two" data-role="button">Join a Visualizer</a></p>
-	
+		<p><a href="starter-create.php" data-role="button">Start a Visualizer</a></p>
+		<p><a href="joiner-join" data-role="button">Join a Visualizer</a></p>
 	</div>
 	<!-- Content Ends Here -->
 	

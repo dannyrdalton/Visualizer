@@ -28,6 +28,7 @@
 	<!-- Header Begins Here -->
 	<div data-role="header">
 		<h1>Header Text Change</h1>
+		<a href="index.php" data-icon="check">Back</a>
 	</div>
 	<!-- Header Ends Here->
 	
