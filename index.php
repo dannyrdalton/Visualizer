@@ -27,7 +27,7 @@
 
 	<!-- Header Begins Here -->
 	<div data-role="header">
-		<h1>Header Text Change</h1>
+		<h1>Home</h1>
 	</div>
 	<!-- Header Ends Here->
 	

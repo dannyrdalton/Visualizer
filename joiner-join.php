@@ -27,7 +27,7 @@
 
 	<!-- Header Begins Here -->
 	<div data-role="header">
-		<h1>Header Text Change</h1>
+		<h1>Join a Visualizer</h1>
 		<a href="index.php" data-icon="check">Back</a>
 	</div>
 	<!-- Header Ends Here->
@@ -35,7 +35,7 @@
 	
 	<!-- Content Begins Here -->
 	<div data-role="content">
-	
+	<p><a href="joiner-visualizer.php" data-role="button">NOREQ013</a></p>
 	</div>
 	<!-- Content Ends Here -->
 	
