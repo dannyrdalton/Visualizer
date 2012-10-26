@@ -2,7 +2,7 @@
 <html>
 
 <head>
-	<title>Home Page</title> 
+	<title>Vizualizer Display</title> 
 	<meta charset="utf-8">
 	<meta name="apple-mobile-web-app-capable" content="yes">
  	<meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -10,9 +10,9 @@
 
 	<link rel="stylesheet" href="jquery.mobile-1.2.0.css" />
 
-	<link rel="stylesheet" href="style.css" />
-	<link rel="apple-touch-icon" href="appicon.png" />
-	<link rel="apple-touch-startup-image" href="upstart.png">
+	<link rel="stylesheet" href="style.css" /> //links to CSS style sheet
+	<link rel="apple-touch-icon" href="appicon.png" /> //file for app icon
+	<link rel="apple-touch-startup-image" href="upstart.png"> //file for startup image
 	
 	<script src="jquery-1.8.2.min.js"></script>
 	<script src="jquery.mobile-1.2.0.js"></script>
@@ -34,8 +34,6 @@
 	
 	<!-- Content Begins Here -->
 	<div data-role="content">
-	<p><a href="starter-create.php" data-role="button">Start a Visualizer</a></p>
-	<p><a href="#two" data-role="button">Join a Visualizer</a></p>
 	
 	</div>
 	<!-- Content Ends Here -->
@@ -51,4 +49,3 @@
 
 </body>
 </html>
-
