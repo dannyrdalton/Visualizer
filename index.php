@@ -39,7 +39,7 @@
 
         <!-- Add your site or application content here -->
 
-
+    <!-- Cooper changed this -->
 	<!-- Page Begins Here -->
 	<div data-role="page" id="home">
 	
