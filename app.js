@@ -1,13 +1,20 @@
 var express = require('express');
+/*
 var redis = require('redis');
 var db = redis.createClient();
+*/
 var app = express();
 
-app.use(function(req, res, next){
-  var ua = req.headers['user-agent'];
-  db.zadd('online', Date.now(), ua, next);
+app.get('/', function(request, response) {
+  response.send('Hello World!');
 });
 
+var port = process.env.PORT || 5000;
+app.listen(port, function() {
+  console.log("Listening on " + port);
+});
+
+/*
 app.use(function(req, res, next){
   var min = 60 * 1000;
   var ago = Date.now() - min;
@@ -17,12 +24,15 @@ app.use(function(req, res, next){
     next();
   });
 });
+*/
 
+/*
 app.get('/', function(req, res){
   res.send(req.online.length + ' users online');
 });
+*/
 
-app.listen(3000);
+/* app.listen(3000); */
 
 app.use(function(err, req, res, next){
   console.error(err.stack);
