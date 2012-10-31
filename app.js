@@ -1,7 +1,8 @@
 var express = require('express'),
     app = express.createServer(express.logger()),
     io = require('socket.io').listen(app),
-    routes = require('./routes');
+    routes = require('./routes'),
+    pg = require('pg');
 
 // Configuration
 
@@ -22,6 +23,16 @@ app.configure('production', function() {
   app.use(express.errorHandler());
 });
 
+/*
+pg.connect(process.env.DATABASE_URL, function(err, client) {
+  var query = client.query('SELECT * FROM events WHERE ');
+
+  query.on('row', function(row) {
+    console.log(JSON.stringify(row));
+  });
+});
+*/
+
 // Heroku won't actually allow us to use WebSockets
 // so we have to setup polling instead.
 // https://devcenter.heroku.com/articles/using-socket-io-with-node-js-on-heroku
@@ -37,7 +48,13 @@ app.listen(port, function() {
   console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
 });
 
+
 app.get('/', routes.index);
+app.get('/join', routes.join);
+app.get('/create', routes.create);
+app.get('/input', routes.input);
+app.get('/display', routes.display);
+
 
 var status = "All is well.";
 
@@ -48,3 +65,5 @@ io.sockets.on('connection', function (socket) {
     io.sockets.emit('status', { status: status });
   });
 });
+
+
