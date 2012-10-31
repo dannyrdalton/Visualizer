@@ -1,40 +1,50 @@
-var express = require('express');
-/*
-var redis = require('redis');
-var db = redis.createClient();
-*/
-var app = express();
+var express = require('express'),
+    app = express(),
+    io = require('socket.io').listen(app),
+    routes = require('./routes');
 
-app.get('/', function(request, response) {
-  response.send('Hello World!');
+// Configuration
+
+app.configure(function() {
+  app.set('views', __dirname + '/views');
+  app.set('view engine', 'ejs');
+  app.use(express.bodyParser());
+  app.use(express.methodOverride());
+  app.use(app.router);
+  app.use(express.static(__dirname + '/public'));
 });
 
-var port = process.env.PORT || 5000;
+app.configure('development', function() {
+  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+});
+
+app.configure('production', function() {
+  app.use(express.errorHandler());
+});
+
+// Heroku won't actually allow us to use WebSockets
+// so we have to setup polling instead.
+// https://devcenter.heroku.com/articles/using-socket-io-with-node-js-on-heroku
+io.configure(function () {
+  io.set("transports", ["xhr-polling"]);
+  io.set("polling duration", 10);
+});
+
+// Routes
+
+var port = process.env.PORT || 5000; // Use the port that Heroku provides or default to 5000
 app.listen(port, function() {
-  console.log("Listening on " + port);
+  console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
 });
 
-/*
-app.use(function(req, res, next){
-  var min = 60 * 1000;
-  var ago = Date.now() - min;
-  db.zrevrangebyscore('online', '+inf', ago, function(err, users){
-    if (err) return next(err);
-    req.online = users;
-    next();
+app.get('/', routes.index);
+
+var status = "All is well.";
+
+io.sockets.on('connection', function (socket) {
+  io.sockets.emit('status', { status: status }); // note the use of io.sockets to emit but socket.on to listen
+  socket.on('reset', function (data) {
+    status = "War is imminent!";
+    io.sockets.emit('status', { status: status });
   });
-});
-*/
-
-/*
-app.get('/', function(req, res){
-  res.send(req.online.length + ' users online');
-});
-*/
-
-/* app.listen(3000); */
-
-app.use(function(err, req, res, next){
-  console.error(err.stack);
-  res.send(500, 'Something broke!');
 });
