@@ -1,5 +1,5 @@
 var express = require('express'),
-    app = express(),
+    app = express.createServer(express.logger()),
     io = require('socket.io').listen(app),
     routes = require('./routes');
 
