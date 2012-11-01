@@ -36,8 +36,8 @@
 	<!-- Content Begins Here -->
 	<div data-role="content">
 		<form action="starter-display.php" method="post">
-			<label for="foo">Name:</label>
-			<input type="text" name="username" id="foo">
+			<label for="nameEntry">Name:</label>
+			<input type="text" name="username" id="nameEntry">
 			<input type="submit" value="Create">
 		</form>
 	</div>
