@@ -34,7 +34,7 @@ $("#index-link").click(function () {
 /*
 
 $(document).bind("mobileinit", function(){
-	$.mobile.defaultPageTransition.content('slidefade');
+	$.mobile.defaultPageTransition.content('slide');
 });
 */
 
@@ -57,7 +57,7 @@ $("#join-link").click(function () {
 $("#join-link").click(function () {
 	$('body').load('/join');
 });
-*/
+
 	
 $("#input-link").click(function () {
 	$.mobile.changePage('/input');
@@ -67,5 +67,5 @@ $("#display-link").click(function () {
 	$.mobile.changePage('/display');
 });
     
-    
-*/
+   */ 
+
