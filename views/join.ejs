@@ -1,25 +1,19 @@
-<!-- Header Begins Here -->
 <div data-role="header">
 	<h1>Join an Event</h1>
 </div>
-<!-- Header Ends Here->
 
-<!-- Content Begins Here -->
 <div class="content">
-	<p><a href="" data-role="button" id="index">Go Back</a></p>
-	<p><a href="" data-role="button" id="input">Join</a></p>
+	<p><a href='' data-role="button" id="index-link">Go Back</a></p>
+	<p><a href='' data-role="button" id="input-link">Join</a></p>
 </div>
-<!-- Content Ends Here -->
 
 <script type="text/javascript">
-	$("#index").click(function () {
-		$.get( '/', function( data ) {
-		  $( 'body' ).html( data ).trigger('create');
-		});
-    });
-	$("#input").click(function () {
-		$.get( '/input', function( data ) {
-		  $( 'body' ).html( data ).trigger('create');
-		});
-    });
+	$("#index-link").click(function () {
+		$.mobile.changePage('/');
+	});
+	
+	
+	$("#input-link").click(function () {
+		$.mobile.changePage('/input');
+	});
 </script>

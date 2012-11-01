@@ -9,17 +9,17 @@ exports.index = function(req, res) {
 };
 
 exports.join = function(req, res) {
-    res.render('join', { layout : false });
+    res.render('join'/* , { layout : false } */);
 };
 
 exports.create = function(req, res) {
-    res.render('create', { layout : false });
+    res.render('create'/* , { layout : false } */);
 };
 
 exports.display = function(req, res) {
-    res.render('display', { layout : false });
+    res.render('display'/* , { layout : false } */);
 };
 
 exports.input = function(req, res) {
-    res.render('input', { layout : false });
+    res.render('input'/* , { layout : false } */);
 };

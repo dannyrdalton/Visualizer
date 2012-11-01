@@ -1,24 +1,19 @@
-<!-- Header Begins Here -->
 <div data-role="header">
 	<h1>Home</h1>
 </div>
-<!-- Header Ends Here->
 
-<!-- Content Begins Here -->
 <div class="content">
-	<a href='' data-role="button" id="create" >Start a Visualizer</a>
-	<p><a href='' data-role="button" id="join" >Join a Visualizer</a></p>
+	<a href='' data-role="button" id="create-link" >Start a Visualizer</a>
+	<p><a href='' data-role="button" id="join-link" >Join a Visualizer</a></p>
 </div>
-<!-- Content Ends Here -->
+
 <script type="text/javascript">
-	$("#create").click(function () {
-		$.get( '/create', function( data ) {
-		  $( 'body' ).html( data ).trigger('create');
-		});
-    });
-	$("#join").click(function () {
-		$.get( '/join', function( data ) {
-		  $( 'body' ).html( data ).trigger('create');
-		});
-    });
+	$("#create-link").click(function () {
+		$.mobile.changePage('/create');
+	});
+	
+	
+	$("#join-link").click(function () {
+		$.mobile.changePage('/join');
+	});
 </script>
