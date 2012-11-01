@@ -1,11 +1,19 @@
 <!-- Header Begins Here -->
-<div class="header">
+<div data-role="header">
 	<h1>Create an Event</h1>
 </div>
 <!-- Header Ends Here->
 
 <!-- Content Begins Here -->
-<div class="content">
-	<p><a href="starter-visualizer.ejs" class="button">Create</a></p>
+<div data-role="content">
+	<p><a href="" data-role="button" id="display" >Create</a></p>
 </div>
 <!-- Content Ends Here -->
+
+<script type="text/javascript">
+	$("#display").click(function () {
+		$.get( '/display', function( data ) {
+		  $( 'body' ).html( data );
+		});
+    });
+</script>
