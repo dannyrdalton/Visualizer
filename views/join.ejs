@@ -1,11 +1,20 @@
-<!-- Header Begins Here -->
 <div data-role="header">
 	<h1>Join an Event</h1>
 </div>
-<!-- Header Ends Here->
 
-<!-- Content Begins Here -->
-<div data-role="content">
-	<p><a href="/input" data-role="button">Join</a></p>
+<div class="content">
+	<p><a href='' data-role="button" id="index-link">Go Back</a></p>
+	<p><a href='' data-role="button" id="input-link">Join</a></p>
 </div>
-<!-- Content Ends Here -->
+
+<script type="text/javascript">
+	$("#index-link").click(function () {
+/* 		$.mobile.changePage('/', { transition: 'slide' } ); */
+		parent.history.back();
+	});
+	
+	
+	$("#input-link").click(function () {
+		$.mobile.changePage('/input', { transition: 'slide' } );
+	});
+</script>

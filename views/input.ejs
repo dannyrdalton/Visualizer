@@ -1,6 +1,23 @@
-<div data-role="content">
-	<p>Touch the screen to the beat!</p>
+<div data-role="content" id="input-wrapper">
+	<p>Tap the screen to the beat!</p>
 	<div class="full-screen-overlay">
 		YOU SHOULD NOT SEE THIS
 	</div>
 </div>
+
+<script type="text/javascript">
+	var socket = io.connect(window.location.hostname);
+	
+	/*
+socket.on('status', function (data) {
+	    $('#status').html(data.status);
+	});
+*/
+	var date = new Date();
+	
+	$('.full-screen-overlay').click(function() {
+		
+	    socket.emit('trigger', { timestamp : date.getTime() });
+	    $('#input-wrapper').append('<p>Event sent at </p>' + date.getTime());
+	});
+</script>

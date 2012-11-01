@@ -5,21 +5,21 @@ var app = require('../app');
  */
 
 exports.index = function(req, res) {
-  res.render('index')
+  res.render('index');
 };
 
 exports.join = function(req, res) {
-    res.render('join')
+    res.render('join'/* , { layout : false } */);
 };
 
 exports.create = function(req, res) {
-    res.render('create')
+    res.render('create'/* , { layout : false } */);
 };
 
 exports.display = function(req, res) {
-    res.render('display')
+    res.render('display'/* , { layout : false } */);
 };
 
 exports.input = function(req, res) {
-    res.render('input')
+    res.render('input'/* , { layout : false } */);
 };

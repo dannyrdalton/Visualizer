@@ -1,12 +1,19 @@
-<!-- Header Begins Here -->
 <div data-role="header">
 	<h1>Home</h1>
 </div>
-<!-- Header Ends Here->
 
-<!-- Content Begins Here -->
-<div data-role="content">
-	<a href='/create' data-role="button">Start a Visualizer</a>
-	<p><a href='/join' data-role="button">Join a Visualizer</a></p>
+<div class="content">
+	<a href='' data-role="button" id="create-link" >Start a Visualizer</a>
+	<p><a href='' data-role="button" id="join-link" >Join a Visualizer</a></p>
 </div>
-<!-- Content Ends Here -->
+
+<script type="text/javascript">
+	$("#create-link").click(function () {
+		$.mobile.changePage('/create', { transition: 'slide' } );
+	});
+	
+	
+	$("#join-link").click(function () {
+		$.mobile.changePage('/join', { transition: 'slide' } );
+	});
+</script>

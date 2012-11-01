@@ -1,0 +1,15 @@
+<div id="visualizer-wrapper">
+	Testing...
+</div>
+
+<script type="text/javascript">
+	var socket = io.connect(window.location.hostname);
+	
+	var date = new Date();
+	
+	socket.on('event', function (time) {
+		var latency = date.getTime() - time.timestamp;
+		console.log(time.timestamp);
+	    $('#visualizer-wrapper').append('<br /><br />Event received! Latency is ' + latency);
+	});
+</script>

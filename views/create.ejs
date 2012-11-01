@@ -1,11 +1,14 @@
-<!-- Header Begins Here -->
 <div data-role="header">
 	<h1>Create an Event</h1>
+	<a href="#" data-role="button" data-rel="back" data-icon="arrow-l">Back</a>
 </div>
-<!-- Header Ends Here->
 
-<!-- Content Begins Here -->
 <div data-role="content">
-	<p><a href="starter-visualizer.ejs" data-role="button">Create</a></p>
+	<p><a href="" data-role="button" id="display-link" >Create</a></p>
 </div>
-<!-- Content Ends Here -->
+
+<script type="text/javascript">
+	$("#display-link").click(function () {
+		$.mobile.changePage('/display', { transition: 'slide' } );
+	});
+</script>

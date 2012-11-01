@@ -36,10 +36,12 @@ pg.connect(process.env.DATABASE_URL, function(err, client) {
 // Heroku won't actually allow us to use WebSockets
 // so we have to setup polling instead.
 // https://devcenter.heroku.com/articles/using-socket-io-with-node-js-on-heroku
+/*
 io.configure(function () {
   io.set("transports", ["xhr-polling"]);
-  io.set("polling duration", 10);
+  io.set("polling duration", 1);
 });
+*/
 
 // Routes
 
@@ -58,12 +60,13 @@ app.get('/display', routes.display);
 
 var status = "All is well.";
 
+
 io.sockets.on('connection', function (socket) {
   io.sockets.emit('status', { status: status }); // note the use of io.sockets to emit but socket.on to listen
-  socket.on('reset', function (data) {
-    status = "War is imminent!";
-    io.sockets.emit('status', { status: status });
+  socket.on('trigger', function (timestamp) {
+    io.sockets.emit('event', timestamp );
   });
 });
+
 
 
