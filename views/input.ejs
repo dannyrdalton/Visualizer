@@ -13,9 +13,11 @@ socket.on('status', function (data) {
 	    $('#status').html(data.status);
 	});
 */
+	var date = new Date();
 	
 	$('.full-screen-overlay').click(function() {
-	    socket.emit('trigger');
-	    $('#input-wrapper').append('<p>Event sent to </p>' + window.location.hostname);
+		
+	    socket.emit('trigger', { timestamp : date.getTime() });
+	    $('#input-wrapper').append('<p>Event sent at </p>' + date.getTime());
 	});
 </script>

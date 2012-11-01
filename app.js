@@ -38,7 +38,7 @@ pg.connect(process.env.DATABASE_URL, function(err, client) {
 // https://devcenter.heroku.com/articles/using-socket-io-with-node-js-on-heroku
 io.configure(function () {
   io.set("transports", ["xhr-polling"]);
-  io.set("polling duration", 10);
+  io.set("polling duration", 1);
 });
 
 // Routes
@@ -61,8 +61,8 @@ var status = "All is well.";
 
 io.sockets.on('connection', function (socket) {
   io.sockets.emit('status', { status: status }); // note the use of io.sockets to emit but socket.on to listen
-  socket.on('trigger', function (data) {
-    io.sockets.emit('event');
+  socket.on('trigger', function (timestamp) {
+    io.sockets.emit('event', timestamp );
   });
 });
 
