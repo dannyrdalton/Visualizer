@@ -5,21 +5,21 @@ var app = require('../app');
  */
 
 exports.index = function(req, res) {
-  res.render('index')
+  res.render('index');
 };
 
 exports.join = function(req, res) {
-    res.render('join')
+    res.render('join');
 };
 
 exports.create = function(req, res) {
-    res.render('create')
+    res.render('create');
 };
 
 exports.display = function(req, res) {
-    res.render('display')
+    res.render('display');
 };
 
 exports.input = function(req, res) {
-    res.render('input')
+    res.render('input');
 };
