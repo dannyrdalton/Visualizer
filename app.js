@@ -40,7 +40,7 @@ pg.connect(process.env.DATABASE_URL, function(err, client) {
 io.configure(function () {
   io.set("transports", ["xhr-polling"]);
   io.set("polling duration", 10);
-});
+}); 
 
 
 // Routes
