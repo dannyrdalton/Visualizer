@@ -9,11 +9,12 @@
 
 <script type="text/javascript">
 	$("#index-link").click(function () {
-		$.mobile.changePage('/');
+/* 		$.mobile.changePage('/', { transition: 'slidefade' } ); */
+		parent.history.back();
 	});
 	
 	
 	$("#input-link").click(function () {
-		$.mobile.changePage('/input');
+		$.mobile.changePage('/input', { transition: 'slidefade' } );
 	});
 </script>

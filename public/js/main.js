@@ -31,7 +31,14 @@ $("#index-link").click(function () {
 	});
 });
 */
+/*
 
+$(document).bind("mobileinit", function(){
+	$.mobile.defaultPageTransition.content('slidefade');
+});
+*/
+
+/*
 $("#index-link").click(function () {
 	$.mobile.changePage('/');
 });
@@ -61,3 +68,4 @@ $("#display-link").click(function () {
 });
     
     
+*/
