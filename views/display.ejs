@@ -1,0 +1,11 @@
+<div id="visualizer-wrapper">
+	Testing...
+</div>
+
+<script type="text/javascript">
+	var socket = io.connect(window.location.hostname);
+	
+	socket.on('event', function (data) {
+	    $('#visualizer-wrapper').html('Event received!<br />');
+	});
+</script>
