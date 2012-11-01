@@ -6,6 +6,6 @@
 	var socket = io.connect(window.location.hostname);
 	
 	socket.on('event', function (data) {
-	    $('#visualizer-wrapper').html('Event received!<br />');
+	    $('#visualizer-wrapper').append('Event received!<br />');
 	});
 </script>
