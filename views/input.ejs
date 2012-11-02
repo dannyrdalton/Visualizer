@@ -28,7 +28,7 @@
 	
 	$('.full-screen-overlay').click(function() {
 		date = new Date();
-	    socket.emit('trigger', { timestamp : date.getTime() });
+	    socket.emit('trigger', { timestamp : date.getTime(), color: color });
 	    $('#input-wrapper').append('<br />Event sent at ' + date.getTime());
 
 	});
