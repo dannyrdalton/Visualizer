@@ -45,8 +45,10 @@
 		var boxIndex = data.index;
 		if(debug) {
 /* 			console.log(data.timestamp); */
+
 		    $('#visualizer-wrapper').append('<br />Event received! Latency: ' + latency);
 		    console.log("boxIndex: "+ boxIndex);
+		   	$('#visualizer-wrapper').append('<br /><br />Color is ' + data.color);
 		}
 		var boxX = Math.floor(Math.random() * ($('body').width() - boxWidth));
 		var boxY = Math.floor(Math.random() * ($('body').height() - boxWidth));

@@ -3,16 +3,25 @@
 	<div class="full-screen-overlay">
 		YOU SHOULD NOT SEE THIS
 	</div>
+	<div class="color-square"> 
+	</div>
 	<div class="color-slider">
-		<label for="slider">Input slider:
-                <img id="theImage" src="http://www.glyphish.com/images/spooky-moon.png" />
-            </label>
-            <input type="range" name="slider" id="slider-1" value="0" min="0" max="100"  />
+            <input type="range" name="slider" id="slider-1" value="0" min="0" max="1536"  />
 	</div>
 </div>
 
 
 <script type="text/javascript">
+	var color = "#ff0000";
+	
+	function componentToHex(c) {
+    	var hex = c.toString(16);
+    	return hex.length == 1 ? "0" + hex : hex;
+	}
+
+	function rgbToHex(r, g, b) {
+    	return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+	}
 	var socket = io.connect(window.location.hostname);
 	
 	var date;
@@ -21,21 +30,37 @@
 		date = new Date();
 	    socket.emit('trigger', { timestamp : date.getTime() });
 	    $('#input-wrapper').append('<br />Event sent at ' + date.getTime());
+
 	});
 	
 	$(".color-slider").change(function() {
     	var sVal = $('#slider-1').val();
-    	console.log(sVal);
-    	/*
-if(sVal > 50) {
-        	$('#theImage').attr('src', 'https://si0.twimg.com/profile_images/2452325988/gorzcg0uuguiuzegjsax.png');
-    }
-    
-    	if(sVal <= 50) {
-       		$('#theImage').attr('src', 'http://www.glyphish.com/images/spooky-moon.png');
-    }
-*/
-    
+    	console.log("Sval is %i", sVal);
+    	if (sVal >= 0 && sVal < 256) {
+    		color = rgbToHex(255, sVal, 0);
+    	}
+    	if (sVal >= 256 && sVal < 512) {
+    		color = rgbToHex(255 - (sVal - 256), 255, 0);
+    	}
+    	if (sVal >= 512 && sVal < 768) {
+    		color = rgbToHex(0, 255, sVal - 512);
+    	}
+    	if (sVal >= 768 && sVal < 1024) {
+    		color = rgbToHex(0, 255 - (sVal - 768), 255);
+    	}
+    	if (sVal >= 1024 && sVal < 1280) {
+    		color = rgbToHex(sVal - 1024, 0, 255);
+    	}
+    	if (sVal >= 1280 && sVal < 1536) {
+    		color = rgbToHex(255, 0, 255 - (sVal - 1280));
+    	}
+    	console.log("Color is %s", color);
+    	var test = $(".color-square").css("background-color", color);
+    	var test = $(".color-square").css("layer-background-color", color);
+    	console.log("BG color is %s", test);
+    	
+    	
+    	
     });
 
 </script>
