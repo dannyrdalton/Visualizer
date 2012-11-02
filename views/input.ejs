@@ -3,12 +3,14 @@
 	<div class="full-screen-overlay">
 		YOU SHOULD NOT SEE THIS
 	</div>
-	<div class="color-slider">
-		<label for="slider">Input slider:
-                <img id="theImage" src="http://www.glyphish.com/images/spooky-moon.png" />
+	<div data-role="fieldcontain" class="color-slider">
+	
+            <label for="slider">Input slider:
+                <img id="theImage" src="http://jquerymobile.com/demos/1.0b2/docs/toolbars/glyphish-icons/09-chat2.png" alt="slider images" />
             </label>
             <input type="range" name="slider" id="slider" value="0" min="0" max="100"  />
-	</div>
+   	</div>
+
 </div>
 
 
@@ -23,17 +25,8 @@
 	    $('#input-wrapper').append('<p>Event sent at </p>' + date.getTime());
 	});
 	
-	$("#slider").change(function() {
-    	sVal = $(this).val();
-    
-    	if(sVal > 500) {
-        	$('#theImage').attr('src', 'https://si0.twimg.com/profile_images/2452325988/gorzcg0uuguiuzegjsax.png');
-    }
-    
-    	if(sVal <= 500) {
-       		$('#theImage').attr('src', 'http://www.glyphish.com/images/spooky-moon.png');
-    }
-    
-    });
+	$( ".selector" ).bind( "change", function(event, ui) {
+		$('#input-wrapper').append<'<p> Hi there </p>');
+	});
 
 </script>
