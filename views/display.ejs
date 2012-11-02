@@ -10,7 +10,7 @@
 	var socket = io.connect(window.location.hostname);
 	
 	var date;
-	var debug = 0;
+	var debug = 1;
 	
 	socket.on('event', function (data) {
 		date = new Date();
