@@ -8,16 +8,14 @@
 <script type="text/javascript">
 	var socket = io.connect(window.location.hostname);
 	
-	/*
-socket.on('status', function (data) {
-	    $('#status').html(data.status);
-	});
-*/
-	var date = new Date();
+	var debug = 0;
+	var date;
 	
 	$('.full-screen-overlay').click(function() {
-		
+		date = new Date();
 	    socket.emit('trigger', { timestamp : date.getTime() });
-	    $('#input-wrapper').append('<p>Event sent at </p>' + date.getTime());
+	    if(debug) {
+		    $('#input-wrapper').append('<p>Event sent at </p>' + date.getTime());
+		}
 	});
 </script>

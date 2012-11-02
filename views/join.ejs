@@ -1,19 +1,13 @@
 <div data-role="header">
 	<h1>Join an Event</h1>
+	<a href="#" data-role="button" data-rel="back" data-icon="arrow-l">Back</a>
 </div>
 
 <div class="content">
-	<p><a href='' data-role="button" id="index-link">Go Back</a></p>
 	<p><a href='' data-role="button" id="input-link">Join</a></p>
 </div>
 
 <script type="text/javascript">
-	$("#index-link").click(function () {
-/* 		$.mobile.changePage('/', { transition: 'slide' } ); */
-		parent.history.back();
-	});
-	
-	
 	$("#input-link").click(function () {
 		$.mobile.changePage('/input', { transition: 'slide' } );
 	});

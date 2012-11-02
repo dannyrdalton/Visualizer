@@ -1,15 +1,43 @@
 <div id="visualizer-wrapper">
+	<p id="inputCount">
+	</p>
+	<div id="visualizer1" class="visualizer">
+	</div>
 	Testing...
 </div>
 
 <script type="text/javascript">
 	var socket = io.connect(window.location.hostname);
 	
-	var date = new Date();
+	var date;
 	
-	socket.on('event', function (time) {
-		var latency = date.getTime() - time.timestamp;
-		console.log(time.timestamp);
+	socket.on('event', function (data) {
+		date = new Date();
+		var latency = date.getTime() - data.timestamp;
+		console.log(data.timestamp);
 	    $('#visualizer-wrapper').append('<br /><br />Event received! Latency is ' + latency);
 	});
+	
+	var count = 0;
+	
+	socket.on('count', function(number) {
+		$('#inputCount').html(number);
+	});
+	
+	/* VISUALIZER LOGIC */
+
+	/* 1 - BOXES */
+	
+	var inputIDs = [0];
+	var numInputs = inputIDs.length;
+	
+	var boxes = new Array();
+	
+	/*
+for(var i = 0; i < numInputs; i++) {
+		return;
+	}
+*/
+	
+/* 	$.('#visualizer1').append */
 </script>
