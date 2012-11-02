@@ -93,6 +93,7 @@ textarea {
    Author's custom styles
    ========================================================================== */
 
+
 html, body, .content, #input-wrapper {
 	width: 100%;
 	height: 100%;
@@ -119,14 +120,29 @@ html, body, .content, #input-wrapper {
 
 .color-slider {
 	position: absolute;
-	bottom: 0;
+	bottom: 2px;
+	left: 66px;
 	width: 100%;
 	z-index: 51;
+}
+
+.color-square {
+	z-index: 1; 
+	position: absolute; 
+	left: 2px; 
+	bottom: 0px;
+	width: 64px; 
+	height: 25px; 
+	background-color:#ff0000; 
+	layer-background-color:#ff0000; 
+	visibility: visible
 }
 
 .ui-slider-input {
     display : none !important;
 }​
+
+
 
 
 /* VISUALIZER 1 - BOXES */
