@@ -12,7 +12,8 @@
 
 
 <script type="text/javascript">
-
+	var color = "#ff0000";
+	
 	function componentToHex(c) {
     	var hex = c.toString(16);
     	return hex.length == 1 ? "0" + hex : hex;
@@ -27,12 +28,11 @@
 	
 	$('.full-screen-overlay').click(function() {
 		date = new Date();
-	    socket.emit('trigger', { timestamp : date.getTime() });
+	    socket.emit('trigger', { timestamp: date.getTime(), color: color });
 	    $('#input-wrapper').append('<p>Event sent at </p>' + date.getTime());
 	});
 	
 	$(".color-slider").change(function() {
-		var color;
     	var sVal = $('#slider-1').val();
     	console.log("Sval is %i", sVal);
     	if (sVal >= 0 && sVal < 256) {
@@ -57,7 +57,8 @@
     	var test = $(".color-square").css("background-color", color);
     	var test = $(".color-square").css("layer-background-color", color);
     	console.log("BG color is %s", test);
-
+    	
+    	
     	
     });
 
