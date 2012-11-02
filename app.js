@@ -40,6 +40,7 @@ pg.connect(process.env.DATABASE_URL, function(err, client) {
 io.configure(function () {
   io.set("transports", ["xhr-polling"]);
   io.set("polling duration", 10);
+  io.set("close timeout", 10);
 }); 
 
 
@@ -57,15 +58,23 @@ app.get('/create', routes.create);
 app.get('/input', routes.input);
 app.get('/display', routes.display);
 
-
-var status = "All is well.";
-
+var count = 0;
 
 io.sockets.on('connection', function (socket) {
-  io.sockets.emit('status', { status: status }); // note the use of io.sockets to emit but socket.on to listen
-  socket.on('trigger', function (timestamp) {
-    io.sockets.emit('event', timestamp );
-  });
+	count++;
+	io.sockets.emit('count', {
+		number: count
+	});
+	socket.on('trigger', function (data) {
+		io.sockets.emit('event', data );
+	});
+	socket.on('disconnect', function () {
+	    console.log('DISCONNECTED!!! ');
+	    count--;
+	    io.sockets.emit('count', {
+	        number: count
+	    });
+	});
 });
 
 
