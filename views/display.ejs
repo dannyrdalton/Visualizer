@@ -1,40 +1,76 @@
 <div id="visualizer-wrapper">
-	<p id="inputCount">
-	</p>
 	<div id="visualizer1" class="visualizer">
 	</div>
-	Testing...
 </div>
 
 <script type="text/javascript">
 	var socket = io.connect(window.location.hostname);
 	
-	var date;
-	var debug = 1;
-	
-	socket.on('event', function (data) {
-		date = new Date();
-		var latency = date.getTime() - data.timestamp;
-		if(debug) {
-/* 			console.log(data.timestamp); */
-		    $('#visualizer-wrapper').append('<br /><br />Event received! Latency is ' + latency);
-		}
-	});
-	
-	var count = 0;
-	
-	socket.on('count', function(data) {
-		$('#inputCount').html(data.number);
-	});
-	
 	/* VISUALIZER LOGIC */
 
 	/* 1 - BOXES */
 	
-	var inputIDs = [0];
-	var numInputs = inputIDs.length;
+	var debug = 1;
+	var date;
+	var numInputs = 0;
+	var numBoxes = 0;
+	var boxWidth = 100;
 	
-	var boxes = new Array();
+	socket.on('count', function(data) {
+		numInputs = data.number;
+		
+		while(numInputs > numBoxes) {
+			$('#visualizer1').append('<div class="box" id="box-'+numBoxes+'"></div>')
+			numBoxes++;
+		}
+		while(numInputs < numBoxes) {
+			var removeBox = numBoxes - 1;
+			$('#box-'+removeBox).remove();
+			numBoxes--;
+		}
+		if(debug) {
+			console.log('Number of inputs: ' + numInputs);
+			console.log('Number of boxes: ' + numBoxes);
+		}
+		
+		boxWidth = 100 / Math.ceil((Math.sqrt(numBoxes)));
+		$('.box').width(boxWidth+'%');
+		$('.box').height($('.box').width());
+		$('.box').hide();
+	});
+	
+	socket.on('event', function (data) {
+		date = new Date();
+		var latency = date.getTime() - data.timestamp;
+		var boxIndex = data.index;
+		if(debug) {
+/* 			console.log(data.timestamp); */
+		    $('#visualizer-wrapper').append('<br />Event received! Latency: ' + latency);
+		    console.log("boxIndex: "+ boxIndex);
+		}
+		var boxX = Math.floor(Math.random() * ($('body').width() - boxWidth));
+		var boxY = Math.floor(Math.random() * ($('body').height() - boxWidth));
+		
+		console.log("boxX: "+ boxX);
+		console.log("boxY: "+ boxY);
+		$('#box-'+boxIndex).css({'left' : boxX, 'top' : boxY }).fadeIn().delay(100).fadeOut();
+	});
+	
+	/*
+function nrand() {
+		var x1, x2, rad;
+	 
+		do {
+			x1 = 2 * Math.random() - 1;
+			x2 = 2 * Math.random() - 1;
+			rad = x1 * x1 + x2 * x2;
+		} while(rad >= 1 || rad == 0);
+	 
+		var c = Math.sqrt(-2 * Math.log(rad) / rad);
+	 
+		return x1 * c;
+	}
+*/
 	
 	/*
 for(var i = 0; i < numInputs; i++) {

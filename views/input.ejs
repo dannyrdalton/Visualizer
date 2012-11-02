@@ -20,7 +20,7 @@
 	$('.full-screen-overlay').click(function() {
 		date = new Date();
 	    socket.emit('trigger', { timestamp : date.getTime() });
-	    $('#input-wrapper').append('<p>Event sent at </p>' + date.getTime());
+	    $('#input-wrapper').append('<br />Event sent at ' + date.getTime());
 	});
 	
 	$(".color-slider").change(function() {

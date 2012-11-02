@@ -39,8 +39,8 @@ pg.connect(process.env.DATABASE_URL, function(err, client) {
 
 io.configure(function () {
   io.set("transports", ["xhr-polling"]);
-  io.set("polling duration", 10);
-  io.set("close timeout", 0);
+  io.set("polling duration", 1);
+  io.set("close timeout", 2);
 }); 
 
 
@@ -58,22 +58,39 @@ app.get('/create', routes.create);
 app.get('/input', routes.input);
 app.get('/display', routes.display);
 
-var count = 0;
+var clients = [];
 
 io.sockets.on('connection', function (socket) {
-	count++;
+	console.log('+++++Client connected.+++++');
+	console.log(socket.id);
+	if(clients.indexOf(socket.id) < 0)
+		clients.push(socket.id);
+	// send the clients id to the client itself.
+/*   	socket.emit('id', socket.id); */
+  	
 	io.sockets.emit('count', {
-		number: count
+		number: clients.length
 	});
+	
 	socket.on('trigger', function (data) {
-		io.sockets.emit('event', data );
+		var index = clients.indexOf(socket.id);
+		data.index = index;
+		io.sockets.emit('event', data, { index : index });
 	});
+	
 	socket.on('disconnect', function () {
-	    console.log('DISCONNECTED!!! ');
-	    count--;
-	    io.sockets.emit('count', {
-	        number: count
-	    });
+	    console.log('-----Client '+socket.id+'disconnected.-----');
+	    for( var i=0, len=clients.length; i<len; i++ ){
+			var c = clients[i];
+			if(c == socket.id){
+				clients.splice(i,1);
+				console.log('GOT HEREEEEEEE!!!!!!**@*@!$*@#$');
+				break;
+			}
+		}
+		io.sockets.emit('count', {
+			number: clients.length
+		});
 	});
 });
 

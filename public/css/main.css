@@ -105,6 +105,7 @@ html, body, .content, #input-wrapper {
 	position: absolute;
 	width: 100%;
 	height: 100%;
+	padding: 0;
 }
 
 .full-screen-overlay {
@@ -119,20 +120,27 @@ html, body, .content, #input-wrapper {
 
 .color-slider {
 	position: absolute;
-	bottom: 0;
+	bottom: 20px;
 	width: 100%;
 	z-index: 51;
 }
 
-.ui-slider-input {
-    display : none !important;
-}​
 
 
 /* VISUALIZER 1 - BOXES */
 
+.visualizer {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background: #222;
+}
+
 .box {
-	
+	position: absolute;
+	background: red;
+	border-radius: 4px;
+	-webkit-border-radius: 4px;
 }
 
 
@@ -142,7 +150,11 @@ html, body, .content, #input-wrapper {
 
 
 
-
+/*
+.ui-slider-input {
+    display : none !important;
+}​
+*/
 
 
 /* ==========================================================================
