@@ -23,8 +23,8 @@
 	
 	var count = 0;
 	
-	socket.on('count', function(number) {
-		$('#inputCount').html(number);
+	socket.on('count', function(data) {
+		$('#inputCount').html(data.number);
 	});
 	
 	/* VISUALIZER LOGIC */
