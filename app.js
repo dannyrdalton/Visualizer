@@ -75,16 +75,16 @@ io.sockets.on('connection', function (socket) {
 	socket.on('trigger', function (data) {
 		var index = clients.indexOf(socket.id);
 		data.index = index;
-		io.sockets.emit('event', data, { index : index });
+		io.sockets.emit('event', data);
 	});
 	
 	socket.on('disconnect', function () {
-	    console.log('-----Client '+socket.id+'disconnected.-----');
+	    console.log('-----Client disconnected.-----');
+	    console.log(socket.id);
 	    for( var i=0, len=clients.length; i<len; i++ ){
 			var c = clients[i];
 			if(c == socket.id){
 				clients.splice(i,1);
-				console.log('GOT HEREEEEEEE!!!!!!**@*@!$*@#$');
 				break;
 			}
 		}
