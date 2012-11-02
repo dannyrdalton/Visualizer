@@ -57,8 +57,8 @@
 		console.log("boxY: "+ boxY);
 		console.log('color: '+ data.color);
 		console.log('boxWidth: '+ boxWidth);
-		$('#box-'+boxIndex).fadeIn().delay(50).stop().fadeOut();
-	
+		$('#box-'+boxIndex).css({ 'left' : boxX, 'top' : boxY, 'background-color' : data.color }).fadeIn(200).delay(100).fadeOut(200);
+	});
 	/*
 function nrand() {
 		var x1, x2, rad;
