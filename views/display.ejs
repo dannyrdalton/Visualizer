@@ -10,12 +10,15 @@
 	var socket = io.connect(window.location.hostname);
 	
 	var date;
+	var debug = 0;
 	
 	socket.on('event', function (data) {
 		date = new Date();
 		var latency = date.getTime() - data.timestamp;
-		console.log(data.timestamp);
-	    $('#visualizer-wrapper').append('<br /><br />Event received! Latency is ' + latency);
+		if(debug) {
+/* 			console.log(data.timestamp); */
+		    $('#visualizer-wrapper').append('<br /><br />Event received! Latency is ' + latency);
+		}
 	});
 	
 	var count = 0;

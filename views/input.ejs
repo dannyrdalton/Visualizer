@@ -7,7 +7,7 @@
 		<label for="slider">Input slider:
                 <img id="theImage" src="http://www.glyphish.com/images/spooky-moon.png" />
             </label>
-            <input type="range" name="slider" id="slider" value="0" min="0" max="100"  />
+            <input type="range" name="slider" id="slider-1" value="0" min="0" max="100"  />
 	</div>
 </div>
 
@@ -15,24 +15,26 @@
 <script type="text/javascript">
 	var socket = io.connect(window.location.hostname);
 	
-	var date = new Date();
+	var date;
 	
 	$('.full-screen-overlay').click(function() {
-		
+		date = new Date();
 	    socket.emit('trigger', { timestamp : date.getTime() });
 	    $('#input-wrapper').append('<p>Event sent at </p>' + date.getTime());
 	});
 	
-	$("#slider").change(function() {
-    	sVal = $(this).val();
-    
-    	if(sVal > 500) {
+	$(".color-slider").change(function() {
+    	var sVal = $('#slider-1').val();
+    	console.log(sVal);
+    	/*
+if(sVal > 50) {
         	$('#theImage').attr('src', 'https://si0.twimg.com/profile_images/2452325988/gorzcg0uuguiuzegjsax.png');
     }
     
-    	if(sVal <= 500) {
+    	if(sVal <= 50) {
        		$('#theImage').attr('src', 'http://www.glyphish.com/images/spooky-moon.png');
     }
+*/
     
     });
 
