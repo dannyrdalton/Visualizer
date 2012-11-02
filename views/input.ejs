@@ -3,16 +3,18 @@
 	<div class="full-screen-overlay">
 		YOU SHOULD NOT SEE THIS
 	</div>
+	<div class="color-slider">
+		<label for="slider">Input slider:
+                <img id="theImage" src="http://www.glyphish.com/images/spooky-moon.png" />
+            </label>
+            <input type="range" name="slider" id="slider" value="0" min="0" max="100"  />
+	</div>
 </div>
+
 
 <script type="text/javascript">
 	var socket = io.connect(window.location.hostname);
 	
-	/*
-socket.on('status', function (data) {
-	    $('#status').html(data.status);
-	});
-*/
 	var date = new Date();
 	
 	$('.full-screen-overlay').click(function() {
@@ -20,4 +22,18 @@ socket.on('status', function (data) {
 	    socket.emit('trigger', { timestamp : date.getTime() });
 	    $('#input-wrapper').append('<p>Event sent at </p>' + date.getTime());
 	});
+	
+	$("#slider").change(function() {
+    	sVal = $(this).val();
+    
+    	if(sVal > 500) {
+        	$('#theImage').attr('src', 'https://si0.twimg.com/profile_images/2452325988/gorzcg0uuguiuzegjsax.png');
+    }
+    
+    	if(sVal <= 500) {
+       		$('#theImage').attr('src', 'http://www.glyphish.com/images/spooky-moon.png');
+    }
+    
+    });
+
 </script>

@@ -114,9 +114,19 @@ html, body, .content, #input-wrapper {
 	width: 100%;
 	height: 100%;
 	opacity: 0;
-	z-index: 100;
+	z-index: 50;
 }
 
+.color-slider {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	z-index: 51;
+}
+
+.ui-slider-input {
+    display : none !important;
+}​
 
 
 
