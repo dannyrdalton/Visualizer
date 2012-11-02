@@ -57,14 +57,7 @@
 		console.log("boxY: "+ boxY);
 		console.log('color: '+ data.color);
 		console.log('boxWidth: '+ boxWidth);
-		$('#box-'+boxIndex).css({'left' : boxX, 'top' : boxY, 'background-color' : data.color }).animate({ 
-		'opacity' : 0.7
-		}, 50
-		).delay(50).animate({ 
-		'opacity' : 0
-		}, 50
-		);
-	});
+		$('#box-'+boxIndex).fadeIn().delay(50).stop().fadeOut();
 	
 	/*
 function nrand() {
