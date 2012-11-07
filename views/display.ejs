@@ -10,7 +10,7 @@
 
 	/* 1 - BOXES */
 	
-	var debug = 1;
+	var debug = 0;
 	var date;
 	var numInputs = 0;
 	var numBoxes = 0;
@@ -36,7 +36,6 @@
 		boxWidth = 100 / Math.ceil((Math.sqrt(numBoxes)));
 		$('.box').width(boxWidth+'%');
 		$('.box').height($('.box').width());
-		$('.box').hide();
 	});
 	
 	socket.on('event', function (data) {
@@ -57,7 +56,15 @@
 		console.log("boxY: "+ boxY);
 		console.log('color: '+ data.color);
 		console.log('boxWidth: '+ boxWidth);
-		$('#box-'+boxIndex).css({ 'left' : boxX, 'top' : boxY, 'background-color' : data.color }).fadeIn(200).delay(100).fadeOut(200);
+		$('#box-'+boxIndex).css({ 'left' : boxX, 'top' : boxY, 'background-color' : data.color }).animate(
+		{
+			'opacity' : 0.75,
+			boxShadow: '0 0 50px #eee'
+		}, 100).animate(
+		{
+			'opacity' : 0,
+			boxShadow: '0 0 0px #eee'
+		}, 100);
 	});
 	/*
 function nrand() {

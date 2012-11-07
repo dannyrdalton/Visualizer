@@ -166,6 +166,9 @@ body {
 	background: red;
 	border-radius: 4px;
 	-webkit-border-radius: 4px;
+	opacity: 0;
+	box-shadow: 0 0 0 0 #eee;
+	-webkit-box-shadow: 0 0 0 0 #eee;
 }
 
 
