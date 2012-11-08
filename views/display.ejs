@@ -14,13 +14,36 @@
 	var date;
 	var numInputs = 0;
 	var numBoxes = 0;
+	var numLines = 0;
 	var boxWidth = 100;
 	
 	socket.on('count', function(data) {
 		numInputs = data.number;
 		
-		while(numInputs > numBoxes) {
-			$('#visualizer1').append('<div class="box" id="box-'+numBoxes+'"></div>')
+		/* CODE TO GENERATE LINES */
+		while(numInputs > numLines) {
+			$('#visualizer1').append('<div class="line" id="line-'+numLines+'"></div>');
+			numLines++;
+			console.log(numLines);
+		}
+		while(numInputs < numLines) {
+			var removeLine = numLines - 1;
+			$('#box-'+removeLine).remove();
+			numLines--;
+		}
+		if(debug) {
+			console.log('Number of inputs: ' + numInputs);
+			console.log('Number of lines: ' + numLines);
+		}
+		
+		lineWidth = 80 / (numLines - 1);
+		$('.line').width(lineWidth+'%');
+		$('.line').height(400);
+
+
+		/* CODE TO GENERATE BOXES */
+	/*	while(numInputs > numBoxes) {
+			$('#visualizer1').append('<div class="box" id="box-'+numBoxes+'"></div>');
 			numBoxes++;
 		}
 		while(numInputs < numBoxes) {
@@ -35,13 +58,15 @@
 		
 		boxWidth = 100 / Math.ceil((Math.sqrt(numBoxes)));
 		$('.box').width(boxWidth+'%');
-		$('.box').height($('.box').width());
+		$('.box').height($('.box').width());  */
 	});
 	
 	socket.on('event', function (data) {
 		date = new Date();
 		var latency = date.getTime() - data.timestamp;
 		var boxIndex = data.index;
+		var lineIndex = data.index;
+		
 		if(debug) {
 /* 			console.log(data.timestamp); */
 
@@ -49,7 +74,25 @@
 		    console.log("boxIndex: "+ boxIndex);
 		   	$('#visualizer-wrapper').append('<br /><br />Color is ' + data.color);
 		}
-		var boxX = Math.floor(Math.random() * ($('body').width() - $('.box').width()));
+		
+		/* CODE TO DISPLAY LINES */
+		var lineX = Math.floor((($(window).width() * 0.2) / (2 + numLines - 2)) * lineIndex + $('.line').width() * (lineIndex - 1));
+		var lineY = 0;
+		console.log("lineX: "+ lineX);
+		console.log("lineY: "+ lineY);
+		console.log('color: '+ data.color);
+		console.log('lineWidth: '+ lineWidth);
+		$('#line-'+lineIndex).css({ 'left' : lineX, 'bottom' : 0, 'background-color' : data.color }).animate(
+		{
+			'opacity' : 1,
+			'height' : 400,
+		}, 400).animate(
+		{
+			'opacity' : 0,
+			'height' : 0,
+		}, 400);
+		/* CODE TO DISPLAY BOXES */
+	/*	var boxX = Math.floor(Math.random() * ($('body').width() - $('.box').width()));
 		var boxY = Math.floor(Math.random() * ($('body').height() - $('.box').width()));
 		
 		console.log("boxX: "+ boxX);
@@ -64,8 +107,12 @@
 		{
 			'opacity' : 0,
 			boxShadow: '0 0 0px #eee'
-		}, 100);
+		}, 100); */
+		
 	});
+	
+	
+	
 	/*
 function nrand() {
 		var x1, x2, rad;
