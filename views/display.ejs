@@ -15,13 +15,42 @@
 	var numInputs = 0;
 	var numBoxes = 0;
 	var numLines = 0;
+	var numCircles = 0;
 	var boxWidth = 100;
+	var lineWidth = 80;
+	var circleDiameter = 80;
 	
 	socket.on('count', function(data) {
 		numInputs = data.number;
 		
-		/* CODE TO GENERATE  */
-		while(numInputs > numLines) {
+		/*CODE TO GENERATE CIRCLES */
+		console.log("Number of data inputs is ");
+		console.log(numInputs);
+		
+		while(numInputs > numCircles + 1) {
+			$('#visualizer1').append('<div class="circle" id="circle-'+numCircles+'"></div>');
+			numCircles++;
+			console.log(numCircles);
+		}
+		while(numInputs < numCircles + 1) {
+			var removeCircle = numCircles - 1;
+			console.log("remove circle is ");
+			console.log(removeCircle);
+			$('#circle-'+removeCircle).remove();
+			numCircles--;
+		}
+		if(debug) {
+			console.log('Number of inputs: ' + numInputs);
+			console.log('Number of circles: ' + numCircles);
+		}
+		circleDiameter = ($(window).width() * 0.8) / numCircles;
+		$('.circle').width(circleDiameter);
+		$('.circle').height(circleDiameter);
+		$('.circle').css({ '-webkit-border-radius' : 50+'%', '-moz-border-radius' : (circleDiameter/2)+'%' });
+		
+		
+		/* CODE TO GENERATE LINES  */
+	/*	while(numInputs > numLines) {
 			$('#visualizer1').append('<div class="line" id="line-'+numLines+'"></div>');
 			numLines++;
 			console.log(numLines);
@@ -38,7 +67,7 @@
 		
 		lineWidth = 80 / (numLines - 1);
 		$('.line').width(lineWidth+'%');
-		$('.line').height(400);
+		$('.line').height(400); */
 
 
 		/* CODE TO GENERATE BOXES */
@@ -66,6 +95,7 @@
 		var latency = date.getTime() - data.timestamp;
 		var boxIndex = data.index;
 		var lineIndex = data.index;
+		var circleIndex = data.index - 1;
 		
 		if(debug) {
 /* 			console.log(data.timestamp); */
@@ -75,14 +105,49 @@
 		   	$('#visualizer-wrapper').append('<br /><br />Color is ' + data.color);
 		}
 		
+		/*CODE TO DISPLAY CIRCLES */
+		/* circleX line broken */
+		var circleX = Math.floor((($(window).width() * 0.2) / (numCircles + 1)) * (circleIndex + 1) + $('.circle').width() * circleIndex);
+		var circleY = $(window).height() - $('.circle').height();
+		console.log("circleX: "+ circleX);
+		console.log("circleY: "+ circleY);
+		console.log('color: '+ data.color);
+		console.log('circleDiameter:' + circleDiameter);
+		var remainder = circleIndex % 2;
+		if (remainder == 0) {
+			$('#circle-'+circleIndex).css({ 'left' : circleX, 'bottom' : circleY, 'background' : data.color });
+		/*	for (var i = 1; i >= 0; i-=0.05) { */
+				$('#circle-'+circleIndex).animate(
+				{
+					'bottom' : 0,
+				}, 200, 'swing').animate(
+				{
+					'bottom' : (circleY),
+				}, 200, 'swing');
+		/*	} */
+			$('#circle-'+circleIndex).animate( { bottom: circleY, }, 200);
+		} else {
+			$('#circle-'+circleIndex).css({ 'left' : circleX, 'bottom' : 0, 'background' : data.color });
+		/*	for (var i = 0; i <= 1; i+=0.05) { */
+				$('#circle-'+circleIndex).animate(
+				{
+					'bottom' : (circleY),
+				}, 200, 'swing').animate(
+				{
+					'bottom' : 0,
+				}, 200, 'swing');
+		/*	} */
+			$('#circle-'+circleIndex).animate( { bottom: 0, }, 200);
+		}
+		
 		/* CODE TO DISPLAY LINES */
-		var lineX = Math.floor((($(window).width() * 0.2) / (2 + numLines - 2)) * lineIndex + $('.line').width() * (lineIndex - 1));
+	/*	var lineX = Math.floor((($(window).width() * 0.2) / (2 + numLines - 2)) * lineIndex + $('.line').width() * (lineIndex - 1));
 		var lineY = 0;
 		console.log("lineX: "+ lineX);
 		console.log("lineY: "+ lineY);
 		console.log('color: '+ data.color);
 		console.log('lineWidth: '+ lineWidth);
-		$('#line-'+lineIndex).css({ 'left' : lineX, 'bottom' : 0, 'background-color' : data.color }).animate(
+		$('#line-'+lineIndex).css({ 'left' : lineX, 'bottom' : lineY, 'background-color' : data.color }).animate(
 		{
 			'opacity' : 1,
 			'height' : 400,
@@ -90,7 +155,8 @@
 		{
 			'opacity' : 0,
 			'height' : 0,
-		}, 400);
+		}, 400); */
+		
 		/* CODE TO DISPLAY BOXES */
 	/*	var boxX = Math.floor(Math.random() * ($('body').width() - $('.box').width()));
 		var boxY = Math.floor(Math.random() * ($('body').height() - $('.box').width()));
