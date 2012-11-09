@@ -1,15 +1,56 @@
 <div data-role="header">
-	<h1>Join an Event</h1>
+	<h1>Join a Visualizer</h1>
 	<a href="#" data-role="button" data-rel="back" data-icon="arrow-l">Back</a>
+	<a href="#" data-role="button" data-icon="refresh">Refresh</a>
 </div>
 
 
-<div class="content">
-	<p><a href='' data-role="button" id="input-link">Join</a></p>
+<div class="content" data-role="content" role="main" >
+	<p id="joinInstructions">We are determining your location…</p>
+	<ul data-role="listview" id="joinableVisualizers">
+	</ul>
 </div>
 
 <script type="text/javascript">
-	$("#input-link").click(function () {
-		$.mobile.changePage('/input', { transition: 'slide' } );
+	var socket = io.connect(window.location.hostname);
+	var longitude;
+	var latitude;
+	
+	navigator.geolocation.getCurrentPosition(successCallback,errorCallback,{timeout:10000});
+	$('[data-icon="refresh"]').click( function() {
+		navigator.geolocation.getCurrentPosition(successCallback,errorCallback,{timeout:10000});
 	});
+
+	function successCallback(position) {
+		longitude = position.coords.longitude;
+		latitude = position.coords.latitude;
+		console.log('longitude: ' + longitude);
+		console.log('latitude: ' + latitude);
+		socket.emit('visualizerSearch', { longitude: longitude, latitude: latitude} );
+		
+	}
+	
+	function errorCallback() {
+		alert('Cannot get location!');
+	}
+	
+	socket.on('visualizersFound', function(data) {
+		$('#joinableVisualizers').empty();
+		if (data.visualizers.length > 0) {
+			$('#joinInstructions').html("We've found some visualizers near you! Choose the one you want to join:");
+			for( var i = 0; i < data.visualizers.length; i++) {
+				$('#joinableVisualizers').append( '<li><a href="/input/' + data.visualizers[i].name + '" data-role="button" class="input-link">' + data.visualizers[i].name + '</a></li>');
+				$('#joinableVisualizers').listview('refresh');
+			}
+		}
+		else {
+			$('#joinInstructions').html("It looks like there are no active visualizers in your area. Try going back and starting your own!");
+		}
+		
+		$("#joinableVisualizers a").click(function () {
+			$.mobile.changePage($(this).attr('href'), { transition: 'slide' } );
+		});
+	});
+
+	
 </script>

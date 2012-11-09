@@ -1,47 +1,68 @@
 <div id="visualizer-wrapper">
+	<h1 class="visualizerName"><%= name %></h1>
 	<div id="visualizer1" class="visualizer">
 	</div>
 </div>
 
 <script type="text/javascript">
-	var socket = io.connect(window.location.hostname);
-	
+/* 	var socket = io.connect(window.location.hostname); */
+	$('.visualizerName').hide();
 	/* VISUALIZER LOGIC */
 
 	/* 1 - BOXES */
 	
-	var debug = 0;
+	var debug = 1;
 	var date;
 	var numInputs = 0;
-	var numBoxes = 0;
+	var numElements = 0;
 	var boxWidth = 100;
 	
-	socket.on('count', function(data) {
-		numInputs = data.number;
-		
-		while(numInputs > numBoxes) {
-			$('#visualizer1').append('<div class="box" id="box-'+numBoxes+'"></div>')
-			numBoxes++;
+/* 	socket.emit('visualizerCreated', { longitude : longitude, latitude : latitude }); */
+	var name = $('.visualizerName').html();
+	var pusher = new Pusher('1c0d1fc18d1af207286e');
+	var presenceChannel = pusher.subscribe('presence-' + name);
+	
+	var inputs = [];
+	presenceChannel.members.each(function(member) {
+		inputs.push(member.id);
+		if(debug) {
+			console.log('Member ID #' + member.id + ' added.');
 		}
-		while(numInputs < numBoxes) {
-			var removeBox = numBoxes - 1;
+	});
+/* 	socket.on('count', function(data) { */
+
+	presenceChannel.bind('pusher_internal:member_added', function(member) {
+		inputs.push(member.user_id);
+		if(debug) {
+			console.log('Member ID #' + member.user_id + ' added.');
+		}
+		numInputs++;
+		
+		while(numInputs > numElements) {
+			$('#visualizer1').append('<div class="box" id="box-'+numElements+'"></div>')
+			numElements++;
+		}
+		while(numInputs < numElements) {
+			var removeBox = numElements - 1;
 			$('#box-'+removeBox).remove();
-			numBoxes--;
+			numElements--;
 		}
 		if(debug) {
 			console.log('Number of inputs: ' + numInputs);
-			console.log('Number of boxes: ' + numBoxes);
+			console.log('Number of boxes: ' + numElements);
 		}
 		
-		boxWidth = 100 / Math.ceil((Math.sqrt(numBoxes)));
+		boxWidth = 100 / Math.ceil((Math.sqrt(numElements)));
 		$('.box').width(boxWidth+'%');
 		$('.box').height($('.box').width());
 	});
 	
-	socket.on('event', function (data) {
+/* 	socket.on('event', function (data) { */
+	presenceChannel.bind('client-tapped', function(data) {
 		date = new Date();
 		var latency = date.getTime() - data.timestamp;
-		var boxIndex = data.index;
+		var boxIndex = inputs.indexOf(data.id);
+		
 		if(debug) {
 /* 			console.log(data.timestamp); */
 

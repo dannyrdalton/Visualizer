@@ -1,17 +1,43 @@
-<div data-role="content" id="input-wrapper">
-	<p>Tap the screen to the beat!</p>
-	<div class="full-screen-overlay">
-		YOU SHOULD NOT SEE THIS
-	</div>
-	<div class="color-square"> 
-	</div>
-	<div class="color-slider">
-            <input type="range" name="slider" id="slider-1" value="0" min="0" max="1536"  />
+<div data-role="header">
+	<h1 class="visualizerName"><%= name %></h1>
+	<a href="#" data-role="button" data-rel="back" data-icon="arrow-l">Back</a>
+</div>
+
+<div data-role="content" role="main">
+	<div id="input-wrapper">
+		<p>Tap the screen to the beat!</p>
+		<div class="full-screen-overlay">
+			YOU SHOULD NOT SEE THIS
+		</div>
+		<div class="color-indicator"> 
+		</div>
+		<div class="color-slider">
+	            <input type="range" name="slider" id="slider-1" value="0" min="0" max="1536"  />
+		</div>
 	</div>
 </div>
 
 
 <script type="text/javascript">
+	var type = "circles";
+	
+	var name = $('.visualizerName').html();
+	$('.full-screen-overlay').height($(this).height() - 46);
+	
+	var pusher = new Pusher('1c0d1fc18d1af207286e');
+	var presenceChannel = pusher.subscribe('presence-' + name);
+	
+/*
+	channel.bind('new-price', function(data) {
+	    // add new price into the APPL widget
+	});
+*/
+	var socketID = null;
+	pusher.connection.bind('connected', function() {
+		socketID = pusher.connection.socket_id;
+		
+	});
+
 	var color = "#ff0000";
 	
 	function componentToHex(c) {
@@ -22,15 +48,16 @@
 	function rgbToHex(r, g, b) {
     	return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
 	}
-	var socket = io.connect(window.location.hostname);
+/* 	var socket = io.connect(window.location.hostname); */
 	
 	var date;
 	
-	$('.full-screen-overlay').click(function() {
+	$('.full-screen-overlay').bind('tap', function(e) {
 		date = new Date();
-	    socket.emit('trigger', { timestamp : date.getTime(), color : color });
+/* 	    socket.emit('trigger', { timestamp : date.getTime(), color : color }); */
 /* 	    $('#input-wrapper').append('<br />Event sent at ' + date.getTime()); */
-
+		console.log('Tapped!!!');
+		presenceChannel.trigger('client-tapped', { id : presenceChannel.members.me.id, color : color, timestamp : date.getTime() } );
 	});
 	
 	$(".color-slider").change(function() {
@@ -55,8 +82,7 @@
     		color = rgbToHex(255, 0, 255 - (sVal - 1280));
     	}
     	console.log("Color is %s", color);
-    	var test = $(".color-square").css("background-color", color);
-    	var test = $(".color-square").css("layer-background-color", color);
+    	var test = $(".color-indicator").css("background-color", color);
     	console.log("BG color is %s", test);
     	
     	

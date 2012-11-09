@@ -3,12 +3,61 @@
 	<a href="#" data-role="button" data-rel="back" data-icon="arrow-l">Back</a>
 </div>
 
-<div data-role="content">
-	<p><a href="" data-role="button" id="display-link" >Create</a></p>
+<div data-role="content" role="main">
+
+	<div data-role="popup" id="nameTaken">
+		<p>Sorry, this visualizer name is already taken. Please choose another.<p>
+	</div>
+	<form id="visualizer-form" method="POST" action="mainpage" data-ajax="false">
+		<input placeholder="Name your visualizer" id="visualizer-name" type="text" />
+		<input type="submit" value="Start visualizer"  />
+	</form>
+<!-- 	<p><a href="" data-role="button" id="display-link" >Start visualizer</a></p> -->
 </div>
 
 <script type="text/javascript">
+	
+	var socket = io.connect(window.location.hostname);
+	var longitude;
+	var latitude;
+	var type = 'circles';
+	
+	navigator.geolocation.getCurrentPosition(successCallback,errorCallback,{timeout:10000});
+
+	function successCallback(position) {
+		longitude = position.coords.longitude;
+		latitude = position.coords.latitude;
+		console.log('longitude: ' + longitude);
+		console.log('latitude: ' + latitude);
+		
+	}
+	
+	function errorCallback() {
+		alert('Cannot get location!');
+	}
+	
+/*
 	$("#display-link").click(function () {
-		$.mobile.changePage('/display', { transition: 'slide' } );
+		var name = $('#visualizer-form input').val();
+		socket.emit('visualizerCreated', { name : name, type : type, longitude : longitude, latitude : latitude });
+		var url = '/display/' + name;
+		$.mobile.changePage(url, { transition: 'slide' } );
 	});
+*/
+	var name = '';
+
+	$("#visualizer-form").bind('submit', function (event) {
+		event.preventDefault();
+		name = $('#visualizer-name').val();
+		socket.emit('visualizerRequest', { name : name, type : type, longitude : longitude, latitude : latitude });
+	});
+	socket.on('nameAlreadyTaken', function() {
+		$('#nameTaken').popup('open', { positionTo : "window" } );//.delay(10000).popup('close');
+	});
+	socket.on('nameAccepted', function() {
+		var url = '/display/' + name;
+		$.mobile.changePage(url, { transition: 'slide' } );
+	});
+	
+	
 </script>
