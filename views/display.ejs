@@ -67,8 +67,8 @@
 		    console.log("boxIndex: "+ boxIndex);
 		   	console.log('Color is ' + data.color);
 		}
-		var boxX = Math.floor(Math.random() * ($('body').width() - $('.box').width()));
-		var boxY = Math.floor(Math.random() * ($('body').height() - $('.box').width()));
+		var boxX = data.xPos * ($('body').width() - $('.box').width()); //Math.floor(Math.random() * ($('body').width() - $('.box').width()));
+		var boxY = data.yPos * ($('body').height() - $('.box').width()); //Math.floor(Math.random() * ($('body').height() - $('.box').width()));
 		
 		console.log("boxX: "+ boxX);
 		console.log("boxY: "+ boxY);
