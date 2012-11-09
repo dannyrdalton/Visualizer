@@ -100,6 +100,7 @@ html, body, .content, #input-wrapper {
 }
 
 body {
+	color: white;
 }
 
 #bg {
@@ -202,7 +203,6 @@ body {
 	backgournd: red;
 	opacity: 0.5;
 }
-
 
 .ui-slider-input {
     display : none !important;

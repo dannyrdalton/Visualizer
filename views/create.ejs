@@ -9,15 +9,27 @@
 
 
 <div data-role="content">
-	<p><a href="" data-role="button" id="display-link" >Create Squares</a></p>
-	<p><a href="" data-role="button" id="line-display-link" >Create Lines</a></p>
+
+
+	<input type="radio" name="viz_type" id="radio-circles" value="c" />
+		<label for="radio-circles">Circles</label>
+	
+	<input type="radio" name="viz_type" id="radio-boxes" value="b" />
+		<label for="radio-boxes">Boxes</label>
+	
+	<input type="radio" name="viz_type" id="radio-lines" value="l" />
+		<label for="radio-lines">Lines</label>
+		
+/* BUTTON CODE */
+	<p><a href="" data-role="button" id="display-link" >Create Event</a></p>
 </div>
 
 <script type="text/javascript">
+
 	$("#display-link").click(function () {
 		$.mobile.changePage('/display#boxes', { transition: 'slide' } );
 	});
-	$("#line-display-link").click(function () {
-		$.mobile.changePage('/display#lines', { transition: 'slide' } );
-	});
+	
+/* CAROUSEL JAVASCRIPT */
+
 </script>
