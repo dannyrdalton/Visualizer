@@ -11,7 +11,7 @@
 
 	/* 1 - BOXES */
 	
-	var debug = 1;
+	var debug = 0;
 	var date;
 	var numInputs = 0;
 	var numElements = 0;
@@ -29,7 +29,6 @@
 			console.log('Member ID #' + member.id + ' added.');
 		}
 	});
-/* 	socket.on('count', function(data) { */
 
 	presenceChannel.bind('pusher_internal:member_added', function(member) {
 		inputs.push(member.user_id);
@@ -57,18 +56,16 @@
 		$('.box').height($('.box').width());
 	});
 	
-/* 	socket.on('event', function (data) { */
 	presenceChannel.bind('client-tapped', function(data) {
 		date = new Date();
 		var latency = date.getTime() - data.timestamp;
 		var boxIndex = inputs.indexOf(data.id);
 		
 		if(debug) {
-/* 			console.log(data.timestamp); */
 
-		    $('#visualizer-wrapper').append('<br />Event received! Latency: ' + latency);
+		    console.log('Event received! Latency: ' + latency);
 		    console.log("boxIndex: "+ boxIndex);
-		   	$('#visualizer-wrapper').append('<br /><br />Color is ' + data.color);
+		   	console.log('Color is ' + data.color);
 		}
 		var boxX = Math.floor(Math.random() * ($('body').width() - $('.box').width()));
 		var boxY = Math.floor(Math.random() * ($('body').height() - $('.box').width()));
