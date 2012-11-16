@@ -21,347 +21,233 @@
 </div>
 
 <script type="text/javascript">
-	var socket = io.connect(window.location.hostname);
-	
-	/* VISUALIZER LOGIC */
+var socket = io.connect(window.location.hostname);
 
-	
-	var debug = 1;
-	var date;
-	var numInputs = 0,
-		numCircles = 0,
-		numBars = 0,
-		numBalls = 0;
-	
-	var currentType = 'circles';
+/* VISUALIZER LOGIC */
 
-	var circleDiameter = 100;
-	var barWidth = 80;
-	var ballDiameter = 80;
-	
-	// Initialize UI
-	$(document).bind('pageload', function() {
-		$('#controls-wrapper').hide();
-	});
-	$(document).ready(function() {
-		$('#controls-wrapper').hide();
-	});
-	
-	// Switch to fullscreen mode
-	$('#fullscreen-button').click(function() {
-		var elem = document.getElementById('display-wrapper');
-		if (elem.requestFullScreen) {
-		  elem.requestFullScreen();
-		  return;
-		} else if (elem.mozRequestFullScreen) {
-		  elem.mozRequestFullScreen();
-		  return;
-		} else if (elem.webkitRequestFullScreen) {
-		  elem.webkitRequestFullScreen();
-		  return;
-		}
-	});
-	
-	// Show controls on mouse move, tap
-	var mouseToggle = true;
-	var timerToggle = false;
-	$(document).mousemove(function () {
-		if(mouseToggle){
-			mouseToggle = false;
-			$('#controls-wrapper').fadeIn(200);
-		}
-		
-		var onMouseStop = function () {
-			mouseToggle = true;
-			$('#controls-wrapper').fadeOut(200);
-		};
-		
-		clearTimeout(timerToggle);
-		timerToggle = setTimeout(onMouseStop, 800);
-	});
-	$(document).bind('tap', function() {
-		$('#controls-wrapper').fadeToggle(200);
-	});
-	
-	var name = $('.visualizerName').html();
-	socket.emit('requestType', { name : name });
-	socket.on('typeIs', function(data) {
-		type = data.type;
-	});
-	
-	// Change visualizer type
-	function changeVisualizerType(type) {
-		switch(type) {
-			case 'circles':
-				$('#visualizer2').hide();
-				$('#visualizer3').hide();
-				break;
-			case 'bars':
-				$('#visualizer1').hide();
-				$('#visualizer3').hide();
-				break;
-			case 'balls':
-				$('#visualizer1').hide();
-				$('#visualizer2').hide();
-				break;
-			console.log('Error: invalid type given.');
-		}
+
+var debug = 1;
+var date;
+var numInputs = 0,
+	numCircles = 0,
+	numBars = 0,
+	numBalls = 0;
+
+var currentType = 'circles';
+
+var circleDiameter = 100;
+var barWidth = 80;
+var ballDiameter = 80;
+
+// Initialize UI
+$(document).bind('pageload', function() {
+	$('#controls-wrapper').hide();
+});
+$(document).ready(function() {
+	$('#controls-wrapper').hide();
+});
+
+// Switch to fullscreen mode
+$('#fullscreen-button').click(function() {
+	var elem = document.getElementById('display-wrapper');
+	if (elem.requestFullScreen) {
+	  elem.requestFullScreen();
+	  return;
+	} else if (elem.mozRequestFullScreen) {
+	  elem.mozRequestFullScreen();
+	  return;
+	} else if (elem.webkitRequestFullScreen) {
+	  elem.webkitRequestFullScreen();
+	  return;
+	}
+});
+
+// Show controls on mouse move, tap
+var mouseToggle = true;
+var timerToggle = false;
+$(document).mousemove(function () {
+	if(mouseToggle){
+		mouseToggle = false;
+		$('#controls-wrapper').fadeIn(200);
 	}
 	
-	// Initialize Pusher
-	var pusher = new Pusher('1c0d1fc18d1af207286e');
-	var presenceChannel = pusher.subscribe('presence-' + name.replace(/[^a-z0-9\.]+/gi, "")); // Remove characters incompatible with Pusher
+	var onMouseStop = function () {
+		mouseToggle = true;
+		$('#controls-wrapper').fadeOut(200);
+	};
 	
-	var inputs = [];
-	presenceChannel.bind('pusher:subscription_succeeded', function(members) {
-		members.each(function(member) {
-			if(member.id != members.me.id) {
-				inputs.push(member.id);
-				if(debug) {
-					console.log('Member ID #' + member.id + ' added.');
-				}
-			}
-		});
-	});
+	clearTimeout(timerToggle);
+	timerToggle = setTimeout(onMouseStop, 800);
+});
+$(document).bind('tap', function() {
+	$('#controls-wrapper').fadeToggle(200);
+});
 
-	presenceChannel.bind('pusher_internal:member_added', function(member) {
-		inputs.push(member.user_id);
-		if(debug) {
-			console.log('Member ID #' + member.user_id + ' added.');
-		}
-		numInputs++;
-		renumberElements(numInputs);
-	});
-	
-	presenceChannel.bind('pusher_internal:member_removed', function(member) {
-		if(numInputs > 0) {
-			inputs.splice(inputs.indexOf(member.user_id), 1);
+var name = $('.visualizerName').html();
+socket.emit('requestType', { name : name });
+socket.on('typeIs', function(data) {
+	type = data.type;
+});
+
+// Change visualizer type
+function changeVisualizerType(type) {
+	switch(type) {
+		case 'circles':
+			$('#visualizer2').hide();
+			$('#visualizer3').hide();
+			break;
+		case 'bars':
+			$('#visualizer1').hide();
+			$('#visualizer3').hide();
+			break;
+		case 'balls':
+			$('#visualizer1').hide();
+			$('#visualizer2').hide();
+			break;
+		console.log('Error: invalid type given.');
+	}
+}
+
+// Initialize Pusher
+var pusher = new Pusher('1c0d1fc18d1af207286e');
+var presenceChannel = pusher.subscribe('presence-' + name.replace(/[^a-z0-9\.]+/gi, "")); // Remove characters incompatible with Pusher
+
+var inputs = [];
+presenceChannel.bind('pusher:subscription_succeeded', function(members) {
+	members.each(function(member) {
+		if(member.id != members.me.id) {
+			inputs.push(member.id);
 			if(debug) {
-				console.log('Member ID #' + member.user_id + ' removed.');
+				console.log('Member ID #' + member.id + ' added.');
 			}
-			numInputs--;
-			renumberElements();
 		}
 	});
-	
-	function renumberElements() {
-		renumberCircles();
-		renumberBars();
-		renumberBalls();
-	}
-	
-	function renumberCircles() {
-		while(numCircles < numInputs) {
-			$('#visualizer1').append('<div class="circle" id="circle-'+numCircles+'"></div>')
-			numCircles++;
-		}
-		while(numCircles > numInputs) {
-			var removeIndex = numCircles - 1;
-			$('#circle-'+ removeIndex).remove();
-			numCircles--;
-		}
-		if(debug) {
-			console.log('Number of inputs: ' + numInputs);
-			console.log('Number of circles: ' + numCircles);
-		}
-		
-		circleDiameter = 100 / Math.ceil((Math.sqrt(numCircles)));
-		$('.box').width(boxWidth+'%');
-		$('.box').height($('.box').width());
-	}
-	
-	function renumberBars(number) {
-		while(number > numLines) {
-			$('#visualizer2').append('<div class="line" id="line-'+numLines+'"></div>');
-			numLines++;
-			console.log(numLines);
-		}
-		while(number < numLines) {
-			var removeLine = numLines - 1;
-			$('#line-'+removeLine).remove();
-			numLines--;
-		}
-		if(debug) {
-			console.log('Number of inputs: ' + numInputs);
-			console.log('Number of lines: ' + numLines);
-		}
-		
-		lineWidth = 80 / (numLines - 1);
-		$('.line').width(lineWidth+'%');
-		$('.line').height(400);
-	}
-	
-	function renumberBalls(number) {
-		console.log("Number of data inputs is ");
-		console.log(numInputs);
-		
-		while(number > numCircles + 1) {
-			$('#visualizer3').append('<div class="circle" id="circle-'+numCircles+'"></div>');
-			numCircles++;
-			console.log(numCircles);
-		}
-		while(number < numCircles + 1) {
-			var removeCircle = numCircles - 1;
-			console.log("remove circle is ");
-			console.log(removeCircle);
-			$('#circle-'+removeCircle).remove();
-			numCircles--;
-		}
-		if(debug) {
-			console.log('Number of inputs: ' + number);
-			console.log('Number of circles: ' + numCircles);
-		}
-		circleDiameter = ($(window).width() * 0.8) / numCircles;
-		$('.circle').width(circleDiameter);
-		$('.circle').height(circleDiameter);
-		$('.circle').css({ '-webkit-border-radius' : 50+'%', '-moz-border-radius' : (circleDiameter/2)+'%' });
+});
 
+presenceChannel.bind('pusher_internal:member_added', function(member) {
+	inputs.push(member.user_id);
+	if(debug) {
+		console.log('Member ID #' + member.user_id + ' added.');
 	}
-		
-		
-		/* CODE TO GENERATE LINES  */
-	/*	while(numInputs > numLines) {
-			$('#visualizer1').append('<div class="line" id="line-'+numLines+'"></div>');
-			numLines++;
-			console.log(numLines);
-		}
-		while(numInputs < numLines) {
-			var removeLine = numLines - 1;
-			$('#box-'+removeLine).remove();
-			numLines--;
-		}
-		if(debug) {
-			console.log('Number of inputs: ' + numInputs);
-			console.log('Number of lines: ' + numLines);
-		}
-		
-		lineWidth = 80 / (numLines - 1);
-		$('.line').width(lineWidth+'%');
-		$('.line').height(400); */
+	numInputs++;
+	renumberElements(numInputs);
+});
 
-
-		/* CODE TO GENERATE BOXES */
-	/*	while(numInputs > numBoxes) {
-			$('#visualizer1').append('<div class="box" id="box-'+numBoxes+'"></div>');
-			numBoxes++;
-		}
-		while(numInputs < numElements) {
-			var removeBox = numElements - 1;
-			$('#box-'+removeBox).remove();
-			numElements--;
-		}
+presenceChannel.bind('pusher_internal:member_removed', function(member) {
+	if(numInputs > 0) {
+		inputs.splice(inputs.indexOf(member.user_id), 1);
 		if(debug) {
-			console.log('Number of inputs: ' + numInputs);
-			console.log('Number of boxes: ' + numElements);
+			console.log('Member ID #' + member.user_id + ' removed.');
 		}
-		
-		boxWidth = 100 / Math.ceil((Math.sqrt(numElements)));
-		$('.box').width(boxWidth+'%');
-		$('.box').height($('.box').width());  */
-	
-	presenceChannel.bind('client-tapped', function(data) {
-		date = new Date();
-		var latency = date.getTime() - data.timestamp;
-		var elementIndex = inputs.indexOf(data.id);
-		
+		numInputs--;
+		renumberElements();
+	}
+});
+
+function renumberElements() {
+	renumberCircles();
 /*
-		var lineIndex = data.index;
-		var circleIndex = data.index - 1;
+	renumberBars();
+	renumberBalls();
 */
-		if(type == 'circles'){
-			if(debug) {
+}
+
+function renumberCircles() {
+	while(numCircles < numInputs) {
+		$('#visualizer1').append('<div class="circle" id="circle-'+numCircles+'"></div>')
+		numCircles++;
+	}
+	while(numCircles > numInputs) {
+		var removeIndex = numCircles - 1;
+		$('#circle-'+ removeIndex).remove();
+		numCircles--;
+	}
+	if(debug) {
+		console.log('Number of inputs: ' + numInputs);
+		console.log('Number of circles: ' + numCircles);
+	}
 	
-			    console.log('Event received! Latency: ' + latency);
-			    console.log("boxIndex: "+ elementIndex);
-			   	console.log('Color is ' + data.color);
-			}
+	circleDiameter = 100 / Math.ceil((Math.sqrt(numCircles)));
+	$('.circle').width(circleDiameter+'%');
+	$('.circle').height($('.circle').width());
+}
+
+/*
+function renumberBars(number) {
+	while(number > numLines) {
+		$('#visualizer2').append('<div class="line" id="line-'+numLines+'"></div>');
+		numLines++;
+		console.log(numLines);
+	}
+	while(number < numLines) {
+		var removeLine = numLines - 1;
+		$('#line-'+removeLine).remove();
+		numLines--;
+	}
+	if(debug) {
+		console.log('Number of inputs: ' + numInputs);
+		console.log('Number of lines: ' + numLines);
+	}
 	
-			var boxX = data.xPos * ($('body').width() - $('.box').width()); //Math.floor(Math.random() * ($('body').width() - $('.box').width()));
-			var boxY = data.yPos * ($('body').height() - $('.box').width()); //Math.floor(Math.random() * ($('body').height() - $('.box').width()));
-			
-			console.log("boxX: "+ boxX);
-			console.log("boxY: "+ boxY);
-			console.log('color: '+ data.color);
-			console.log('boxWidth: '+ boxWidth);
-			console.log('#box-'+ elementIndex);
-			$('#box-'+elementIndex).css({ 'left' : boxX, 'top' : boxY, 'background-color' : data.color }).animate(
-			{
-				'opacity' : 0.75,
-				boxShadow: '0 0 50px #eee'
-			}, 100).animate(
-			{
-				'opacity' : 0,
-				boxShadow: '0 0 0px #eee'
-			}, 100);
-		}
-		
+	lineWidth = 80 / (numLines - 1);
+	$('.line').width(lineWidth+'%');
+	$('.line').height(400);
+}
+
+function renumberBalls(number) {
+	console.log("Number of data inputs is ");
+	console.log(numInputs);
 	
-		/*CODE TO DISPLAY CIRCLES */
-		/* circleX line broken */
-		else if(type == 'balls'){
-			var circleX = Math.floor((($(window).width() * 0.2) / (numCircles + 1)) * (elementIndex + 1) + $('.circle').width() * elementIndex);
-			var circleY = $(window).height() - $('.circle').height();
-			console.log("circleX: "+ circleX);
-			console.log("circleY: "+ circleY);
-			console.log('color: '+ data.color);
-			console.log('circleDiameter:' + circleDiameter);
-			var remainder = circleIndex % 2;
-			if (remainder == 0) {
-				$('#circle-'+elementIndex).css({ 'left' : circleX, 'bottom' : circleY, 'background' : data.color });
-			/*	for (var i = 1; i >= 0; i-=0.05) { */
-					$('#circle-'+circleIndex).animate(
-					{
-						'bottom' : 0,
-					}, 200, 'swing').animate(
-					{
-						'bottom' : (circleY),
-					}, 200, 'swing');
-			/*	} */
-				$('#circle-'+elementIndex).animate( { bottom: circleY, }, 200);
-			} else {
-				$('#circle-'+elementIndex).css({ 'left' : circleX, 'bottom' : 0, 'background' : data.color });
-			/*	for (var i = 0; i <= 1; i+=0.05) { */
-					$('#circle-'+elementIndex).animate(
-					{
-						'bottom' : (circleY),
-					}, 200, 'swing').animate(
-					{
-						'bottom' : 0,
-					}, 200, 'swing');
-			/*	} */
-				$('#circle-'+elementIndex).animate( { bottom: 0, }, 200);
-			}
+	while(number > numCircles + 1) {
+		$('#visualizer3').append('<div class="circle" id="circle-'+numCircles+'"></div>');
+		numCircles++;
+		console.log(numCircles);
+	}
+	while(number < numCircles + 1) {
+		var removeCircle = numCircles - 1;
+		console.log("remove circle is ");
+		console.log(removeCircle);
+		$('#circle-'+removeCircle).remove();
+		numCircles--;
+	}
+	if(debug) {
+		console.log('Number of inputs: ' + number);
+		console.log('Number of circles: ' + numCircles);
+	}
+	circleDiameter = ($(window).width() * 0.8) / numCircles;
+	$('.circle').width(circleDiameter);
+	$('.circle').height(circleDiameter);
+	$('.circle').css({ '-webkit-border-radius' : 50+'%', '-moz-border-radius' : (circleDiameter/2)+'%' });
+
+}
+*/
+
+presenceChannel.bind('client-tapped', function(data) {
+	date = new Date();
+	var latency = date.getTime() - data.timestamp;
+	var elementIndex = inputs.indexOf(data.id);
+	console.log('Client ID: ' + data.id);
+	console.log(inputs);
+/*
+	var lineIndex = data.index;
+	var circleIndex = data.index - 1;
+*/
+	if(currentType == 'circles'){
+		if(debug) {
+			console.log('Event received! Latency: ' + latency);
+			console.log("boxIndex: "+ elementIndex);
+			console.log('Color is ' + data.color);
 		}
+
+		var circleX = data.xPos;// * ($('body').width() - $('.circle').width()); //Math.floor(Math.random() * ($('body').width() - $('.box').width()));
+		var circleY = data.yPos;// * ($('body').height() - $('.circle').height()); //Math.floor(Math.random() * ($('body').height() - $('.box').width()));
 		
-		/* CODE TO DISPLAY LINES */
-		else if( type == 'bars') {
-			var lineX = Math.floor((($(window).width() * 0.2) / (2 + numLines - 2)) * elementIndex + $('.line').width() * (elementIndex - 1));
-			var lineY = 0;
-			console.log("lineX: "+ lineX);
-			console.log("lineY: "+ lineY);
-			console.log('color: '+ data.color);
-			console.log('lineWidth: '+ lineWidth);
-			$('#line-'+elementIndex).css({ 'left' : lineX, 'bottom' : lineY, 'background-color' : data.color }).animate(
-			{
-				'opacity' : 1,
-				'height' : 400,
-			}, 400).animate(
-			{
-				'opacity' : 0,
-				'height' : 0,
-			}, 400);
-		}
-	});
-		/* CODE TO DISPLAY BOXES */
-	/*	var boxX = Math.floor(Math.random() * ($('body').width() - $('.box').width()));
-		var boxY = Math.floor(Math.random() * ($('body').height() - $('.box').width()));
->>>>>>> e3be436e33416e5a5a7d83dbd16b0f82e66741ac
-		
-		console.log("boxX: "+ boxX);
-		console.log("boxY: "+ boxY);
+		console.log("boxX: "+ circleX);
+		console.log("boxY: "+ circleY);
 		console.log('color: '+ data.color);
-		console.log('boxWidth: '+ boxWidth);
-		$('#box-'+boxIndex).css({ 'left' : boxX, 'top' : boxY, 'background-color' : data.color }).animate(
+		console.log('boxWidth: '+ circleDiameter);
+		console.log('#box-'+ elementIndex);
+		$('#circle-'+elementIndex).css({ 'left' : circleX, 'top' : circleY, 'background-color' : data.color }).animate(
 		{
 			'opacity' : 0.75,
 			boxShadow: '0 0 50px #eee'
@@ -369,26 +255,60 @@
 		{
 			'opacity' : 0,
 			boxShadow: '0 0 0px #eee'
-		}, 100); */
-		
-
-	
-	
-	/*
-function nrand() {
-		var x1, x2, rad;
-	 
-		do {
-			x1 = 2 * Math.random() - 1;
-			x2 = 2 * Math.random() - 1;
-			rad = x1 * x1 + x2 * x2;
-		} while(rad >= 1 || rad == 0);
-	 
-		var c = Math.sqrt(-2 * Math.log(rad) / rad);
-	 
-		return x1 * c;
+		}, 100);
+	}
+/*
+	else if( currentType == 'bars') {
+		var lineX = Math.floor((($(window).width() * 0.2) / (2 + numLines - 2)) * elementIndex + $('.line').width() * (elementIndex - 1));
+		var lineY = 0;
+		console.log("lineX: "+ lineX);
+		console.log("lineY: "+ lineY);
+		console.log('color: '+ data.color);
+		console.log('lineWidth: '+ lineWidth);
+		$('#line-'+elementIndex).css({ 'left' : lineX, 'bottom' : lineY, 'background-color' : data.color }).animate(
+		{
+			'opacity' : 1,
+			'height' : 400,
+		}, 400).animate(
+		{
+			'opacity' : 0,
+			'height' : 0,
+		}, 400);
+	}
+	else if(currentType == 'balls'){
+		var circleX = Math.floor((($(window).width() * 0.2) / (numCircles + 1)) * (elementIndex + 1) + $('.circle').width() * elementIndex);
+		var circleY = $(window).height() - $('.circle').height();
+		console.log("circleX: "+ circleX);
+		console.log("circleY: "+ circleY);
+		console.log('color: '+ data.color);
+		console.log('circleDiameter:' + circleDiameter);
+		var remainder = circleIndex % 2;
+		if (remainder == 0) {
+			$('#circle-'+elementIndex).css({ 'left' : circleX, 'bottom' : circleY, 'background' : data.color });
+			for (var i = 1; i >= 0; i-=0.05) { 
+				$('#circle-'+circleIndex).animate(
+				{
+					'bottom' : 0,
+				}, 200, 'swing').animate(
+				{
+					'bottom' : (circleY),
+				}, 200, 'swing');
+			} 
+			$('#circle-'+elementIndex).animate( { bottom: circleY, }, 200);
+		} else {
+			$('#circle-'+elementIndex).css({ 'left' : circleX, 'bottom' : 0, 'background' : data.color });
+			for (var i = 0; i <= 1; i+=0.05) {
+				$('#circle-'+elementIndex).animate(
+				{
+					'bottom' : (circleY),
+				}, 200, 'swing').animate(
+				{
+					'bottom' : 0,
+				}, 200, 'swing');
+			}
+			$('#circle-'+elementIndex).animate( { bottom: 0, }, 200);
+		}
 	}
 */
-	
-/* 	$.('#visualizer1').append */
+});
 </script>
