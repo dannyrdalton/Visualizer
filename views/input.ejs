@@ -1,15 +1,13 @@
-<div data-role="header" data-theme="c">
+<div data-role="header" data-theme="a">
 	<h1 class="visualizerName"><%= name %></h1>
 	<a href="#" data-role="button" data-rel="back" data-icon="arrow-l">Back</a>
 </div>
 
-<div data-role="content" role="main" data-theme="c">
+<div data-role="content" role="main" data-theme="a">
 	<div id="input-wrapper">
-		<p>Tap the screen to the beat!</p>
-		<div class="full-screen-overlay">
-			YOU SHOULD NOT SEE THIS
-		</div>
-
+		<p id="input-instructions">Tap the screen to the beat!</p>
+		<div class="input-overlay"></div>
+		<div class="feedback-overlay"></div>
 		<div class="color-slider">
 			<div class="color-indicator"></div>
 			<input type="range" name="slider" id="slider-1" value="0" min="0" max="1536"  />
@@ -17,44 +15,44 @@
 	</div>
 </div>
 
-
 <script type="text/javascript">
 	var debug = 0;
+	
 	var type = "circles";
-	
-	$('.color-indicator').hide();
-	
 	var name = $('.visualizerName').html();
-	$('.full-screen-overlay').height($(this).height() - 46);
+	var date;
 	
+	// Set initial color to red.
+	var color = "#ff0000";
+	
+	// Initialize Pusher
 	var pusher = new Pusher('1c0d1fc18d1af207286e');
-	var presenceChannel = pusher.subscribe('presence-' + name);
-	
-/*
-	channel.bind('new-price', function(data) {
-	    // add new price into the APPL widget
-	});
-*/
+	var presenceChannel = pusher.subscribe('presence-' + name.replace(/[^a-z0-9\.]+/gi, "")); // Pusher isn't compatible with certain character, so we reduce it to a-z, A-Z, 0-9, .
+
+	// Get Socket ID
 	var socketID = null;
 	pusher.connection.bind('connected', function() {
 		socketID = pusher.connection.socket_id;
-		
+	});
+	
+	// Initialize UI elements on page load.
+	$(document).ready(function() { 
+		$('.ui-slider-handle').css('background-color', color);
+		$('.color-indicator').hide();
+		$('.feedback-overlay').hide();
+		$('.input-overlay').height($(this).height() - 46);
+	});
+	// and AJAX
+	$(document).bind('pageload', function() {
+		$('.ui-slider-handle').css('background-color', color);
+		$('.color-indicator').hide();
+		$('.feedback-overlay').hide();
+		$('.input-overlay').height($(this).height() - 46);
 	});
 
-	var color = "#ff0000";
-	$('.ui-slider-handle').css('background-color', color);
 	
-	function componentToHex(c) {
-    	var hex = c.toString(16);
-    	return hex.length == 1 ? "0" + hex : hex;
-	}
-
-	function rgbToHex(r, g, b) {
-    	return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
-	}
-	
-	var date;
-	$('.full-screen-overlay').bind('tap', function(e) {
+	// Tap event handler. Gets timestamp and tap coordinates, sends to display.
+	$('.input-overlay').bind('tap', function(e) {
 		date = new Date();
 		var x, y;
 		if(e.touches) {
@@ -66,14 +64,17 @@
 			x = e.pageX;
 			y = e.pageY;
 		}
-		var xPos = x / $(window).height();
+		var xPos = x / $(window).width();
 		var yPos = y / $(window).height();
+		console.log('xPos: ' + xPos + ' yPos: ' + yPos);
 		presenceChannel.trigger('client-tapped', { id : presenceChannel.members.me.id, color : color, xPos : xPos, yPos : yPos, timestamp : date.getTime() } );
+		$('.feedback-overlay').css({ 'background-color' : color }).show().fadeOut(200);
 	});
 	
+	// Color slider values
+	var offset = ($('.color-indicator').width() / 2) + 10 - 14;
 	$(".color-slider").change(function() {
     	var sVal = $('#slider-1').val();
-/*     	console.log("Sval is %i", sVal); */
     	if (sVal >= 0 && sVal < 256) {
     		color = rgbToHex(255, sVal, 0);
     	}
@@ -92,13 +93,20 @@
     	if (sVal >= 1280 && sVal < 1536) {
     		color = rgbToHex(255, 0, 255 - (sVal - 1280));
     	}
-    	var indicatorPosition = $('.ui-slider-handle').position().left + 14;
+    	var indicatorPosition = $('.ui-slider-handle').offset().left - offset;
     	$(".color-indicator").show().css({'background-color' : color, left : indicatorPosition });
-/*     	console.log($('.ui-slider-handle').position()); */
-    	
     	$('.ui-slider-handle').css('background-color', color);
-    	
     });
+    
+    // Color slider helper function. Converts component value to hex.
+    function componentToHex(c) {
+    	var hex = c.toString(16);
+    	return hex.length == 1 ? "0" + hex : hex;
+	}
+
+	function rgbToHex(r, g, b) {
+    	return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+	}
     
     $( ".color-slider" ).on( 'slidestop', function( event ) { $(".color-indicator").hide() });
 

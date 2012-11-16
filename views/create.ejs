@@ -1,18 +1,27 @@
-<div data-role="header" data-theme="c">
-	<h1>Create an Event</h1>
+<div data-role="header" data-theme="a">
+	<h1>Start a visualizer</h1>
 	<a href="#" data-role="button" data-rel="back" data-icon="arrow-l">Back</a>
 </div>
 
-<div data-role="content" role="main" data-theme="c">
+<div data-role="content" role="main" data-theme="a">
 
 	<div data-role="popup" id="nameTaken">
 		<p>Sorry, this visualizer name is already taken. Please choose another.<p>
 	</div>
 	<form id="visualizer-form" method="POST" action="mainpage" data-ajax="false">
+		<fieldset data-role="controlgroup" data-type="horizontal" >
+			<input type="radio" name="radio-choice" id="radio-choice1" value="circles" checked="checked" />
+         	<label for="radio-choice1">Circles</label>
+
+         	<input type="radio" name="radio-choice" id="radio-choice2" value="bars"  />
+         	<label for="radio-choice2">EQ Bars</label>
+
+         	<input type="radio" name="radio-choice" id="radio-choice3" value="balls"  />
+         	<label for="radio-choice3">Balls</label>
+		</fieldset>
 		<input placeholder="Name your visualizer" id="visualizer-name" type="text" />
 		<input type="submit" value="Start visualizer"  />
 	</form>
-<!-- 	<p><a href="" data-role="button" id="display-link" >Start visualizer</a></p> -->
 </div>
 
 <script type="text/javascript">
@@ -35,20 +44,14 @@
 	function errorCallback() {
 		alert('Cannot get location!');
 	}
-	
-/*
-	$("#display-link").click(function () {
-		var name = $('#visualizer-form input').val();
-		socket.emit('visualizerCreated', { name : name, type : type, longitude : longitude, latitude : latitude });
-		var url = '/display/' + name;
-		$.mobile.changePage(url, { transition: 'slide' } );
-	});
-*/
+
 	var name = '';
 
 	$("#visualizer-form").bind('submit', function (event) {
 		event.preventDefault();
 		name = $('#visualizer-name').val();
+/* 		type = $('#visualizer-form:radio:checked').val(); */
+/* 		console.log(type); */
 		socket.emit('visualizerRequest', { name : name, type : type, longitude : longitude, latitude : latitude });
 	});
 	socket.on('nameAlreadyTaken', function() {
@@ -59,5 +62,12 @@
 		$.mobile.changePage(url, { transition: 'slide' } );
 	});
 	
+
+	$("#radio-circles").click(function () {
+		console.log("CIRCLES!");
+	});
 	
+/* CAROUSEL JAVASCRIPT */
+
+
 </script>

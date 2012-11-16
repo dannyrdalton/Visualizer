@@ -107,6 +107,14 @@ io.sockets.on('connection', function (socket) {
 		}
 		socket.emit( 'visualizersFound', { visualizers: visualizersFound } );
 	});
+	socket.on('visualizerSearch', function(data) {
+		var visualizersFound = [];
+		for( var i = 0; i < visualizerClients.length; i++ ) {
+			if ( visualizerClients[i].name == data.name ) {
+				socket.emit('typeIs', { type : visualizerClients[i].type } );
+			}
+		}
+	});
 /*
 	if(clients.indexOf(socket.id) < 0)
 		clients.push(socket.id);

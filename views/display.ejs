@@ -1,33 +1,127 @@
-<div id="visualizer-wrapper">
-	<h1 class="visualizerName"><%= name %></h1>
-	<div id="visualizer1" class="visualizer">
+<div id="display-wrapper">
+	<div id="visualizer-wrapper">
+		<div id="circlesContainer" class="visualizer">
+		</div>
+		<div id="barsContainer" class="visualizer">
+		</div>
+		<div id="ballsContainer" class="visualizer">
+		</div>
+	</div>
+	<div id="controls-wrapper">
+		<h1 class="visualizerName"><%= name %></h1>
+		<a href="#" data-role="button" data-rel="back" data-icon="arrow-l" id="display-back-button">Back</a>
+		<p id="display-instructions">Join this visualizer on a mobile device to contribute!</p>
+		<a href="#" data-role="button" id="fullscreen-button">Enter Full Screen</a>
+		<div id="display-radio-wrapper">
+			<a href="#circles" class="visualizer-radio" id="circles">Circles</a>
+			<a href="#bars" class="visualizer-radio" id="bars">Bars</a>
+			<a href="#balls" class="visualizer-radio" id="balls">Balls</a>
+		</div>
 	</div>
 </div>
 
 <script type="text/javascript">
-/* 	var socket = io.connect(window.location.hostname); */
-	$('.visualizerName').hide();
+	var socket = io.connect(window.location.hostname);
+	
 	/* VISUALIZER LOGIC */
 
-	/* 1 - BOXES */
 	
-	var debug = 0;
+	var debug = 1;
 	var date;
-	var numInputs = 0;
-	var numElements = 0;
-	var boxWidth = 100;
+	var numInputs = 0,
+		numCircles = 0,
+		numBars = 0,
+		numBalls = 0;
 	
-/* 	socket.emit('visualizerCreated', { longitude : longitude, latitude : latitude }); */
+	var currentType = 'circles';
+
+	var circleDiameter = 100;
+	var barWidth = 80;
+	var ballDiameter = 80;
+	
+	// Initialize UI
+	$(document).bind('pageload', function() {
+		$('#controls-wrapper').hide();
+	});
+	$(document).ready(function() {
+		$('#controls-wrapper').hide();
+	});
+	
+	// Switch to fullscreen mode
+	$('#fullscreen-button').click(function() {
+		var elem = document.getElementById('display-wrapper');
+		if (elem.requestFullScreen) {
+		  elem.requestFullScreen();
+		  return;
+		} else if (elem.mozRequestFullScreen) {
+		  elem.mozRequestFullScreen();
+		  return;
+		} else if (elem.webkitRequestFullScreen) {
+		  elem.webkitRequestFullScreen();
+		  return;
+		}
+	});
+	
+	// Show controls on mouse move, tap
+	var mouseToggle = true;
+	var timerToggle = false;
+	$(document).mousemove(function () {
+		if(mouseToggle){
+			mouseToggle = false;
+			$('#controls-wrapper').fadeIn(200);
+		}
+		
+		var onMouseStop = function () {
+			mouseToggle = true;
+			$('#controls-wrapper').fadeOut(200);
+		};
+		
+		clearTimeout(timerToggle);
+		timerToggle = setTimeout(onMouseStop, 800);
+	});
+	$(document).bind('tap', function() {
+		$('#controls-wrapper').fadeToggle(200);
+	});
+	
 	var name = $('.visualizerName').html();
+	socket.emit('requestType', { name : name });
+	socket.on('typeIs', function(data) {
+		type = data.type;
+	});
+	
+	// Change visualizer type
+	function changeVisualizerType(type) {
+		switch(type) {
+			case 'circles':
+				$('#visualizer2').hide();
+				$('#visualizer3').hide();
+				break;
+			case 'bars':
+				$('#visualizer1').hide();
+				$('#visualizer3').hide();
+				break;
+			case 'balls':
+				$('#visualizer1').hide();
+				$('#visualizer2').hide();
+				break;
+			console.log('Error: invalid type given.');
+		}
+	}
+	
+	// Initialize Pusher
 	var pusher = new Pusher('1c0d1fc18d1af207286e');
-	var presenceChannel = pusher.subscribe('presence-' + name);
+	var presenceChannel = pusher.subscribe('presence-' + name.replace(/[^a-z0-9\.]+/gi, "")); // Remove characters incompatible with Pusher
 	
 	var inputs = [];
-	presenceChannel.members.each(function(member) {
-		inputs.push(member.id);
-		if(debug) {
-			console.log('Member ID #' + member.id + ' added.');
-		}
+	presenceChannel.bind('pusher:subscription_succeeded', function(members) {
+		members.each(function(member) {
+			if(member.id != members.me.id) {
+				inputs.push(member.id);
+				if(debug) {
+					console.log('Member ID #' + member.id + ' added.');
+				}
+			}
+		});
 	});
 
 	presenceChannel.bind('pusher_internal:member_added', function(member) {
@@ -36,10 +130,120 @@
 			console.log('Member ID #' + member.user_id + ' added.');
 		}
 		numInputs++;
+		renumberElements(numInputs);
+	});
+	
+	presenceChannel.bind('pusher_internal:member_removed', function(member) {
+		if(numInputs > 0) {
+			inputs.splice(inputs.indexOf(member.user_id), 1);
+			if(debug) {
+				console.log('Member ID #' + member.user_id + ' removed.');
+			}
+			numInputs--;
+			renumberElements();
+		}
+	});
+	
+	function renumberElements() {
+		renumberCircles();
+		renumberBars();
+		renumberBalls();
+	}
+	
+	function renumberCircles() {
+		while(numCircles < numInputs) {
+			$('#visualizer1').append('<div class="circle" id="circle-'+numCircles+'"></div>')
+			numCircles++;
+		}
+		while(numCircles > numInputs) {
+			var removeIndex = numCircles - 1;
+			$('#circle-'+ removeIndex).remove();
+			numCircles--;
+		}
+		if(debug) {
+			console.log('Number of inputs: ' + numInputs);
+			console.log('Number of circles: ' + numCircles);
+		}
 		
-		while(numInputs > numElements) {
-			$('#visualizer1').append('<div class="box" id="box-'+numElements+'"></div>')
-			numElements++;
+		circleDiameter = 100 / Math.ceil((Math.sqrt(numCircles)));
+		$('.box').width(boxWidth+'%');
+		$('.box').height($('.box').width());
+	}
+	
+	function renumberBars(number) {
+		while(number > numLines) {
+			$('#visualizer2').append('<div class="line" id="line-'+numLines+'"></div>');
+			numLines++;
+			console.log(numLines);
+		}
+		while(number < numLines) {
+			var removeLine = numLines - 1;
+			$('#line-'+removeLine).remove();
+			numLines--;
+		}
+		if(debug) {
+			console.log('Number of inputs: ' + numInputs);
+			console.log('Number of lines: ' + numLines);
+		}
+		
+		lineWidth = 80 / (numLines - 1);
+		$('.line').width(lineWidth+'%');
+		$('.line').height(400);
+	}
+	
+	function renumberBalls(number) {
+		console.log("Number of data inputs is ");
+		console.log(numInputs);
+		
+		while(number > numCircles + 1) {
+			$('#visualizer3').append('<div class="circle" id="circle-'+numCircles+'"></div>');
+			numCircles++;
+			console.log(numCircles);
+		}
+		while(number < numCircles + 1) {
+			var removeCircle = numCircles - 1;
+			console.log("remove circle is ");
+			console.log(removeCircle);
+			$('#circle-'+removeCircle).remove();
+			numCircles--;
+		}
+		if(debug) {
+			console.log('Number of inputs: ' + number);
+			console.log('Number of circles: ' + numCircles);
+		}
+		circleDiameter = ($(window).width() * 0.8) / numCircles;
+		$('.circle').width(circleDiameter);
+		$('.circle').height(circleDiameter);
+		$('.circle').css({ '-webkit-border-radius' : 50+'%', '-moz-border-radius' : (circleDiameter/2)+'%' });
+
+	}
+		
+		
+		/* CODE TO GENERATE LINES  */
+	/*	while(numInputs > numLines) {
+			$('#visualizer1').append('<div class="line" id="line-'+numLines+'"></div>');
+			numLines++;
+			console.log(numLines);
+		}
+		while(numInputs < numLines) {
+			var removeLine = numLines - 1;
+			$('#box-'+removeLine).remove();
+			numLines--;
+		}
+		if(debug) {
+			console.log('Number of inputs: ' + numInputs);
+			console.log('Number of lines: ' + numLines);
+		}
+		
+		lineWidth = 80 / (numLines - 1);
+		$('.line').width(lineWidth+'%');
+		$('.line').height(400); */
+
+
+		/* CODE TO GENERATE BOXES */
+	/*	while(numInputs > numBoxes) {
+			$('#visualizer1').append('<div class="box" id="box-'+numBoxes+'"></div>');
+			numBoxes++;
 		}
 		while(numInputs < numElements) {
 			var removeBox = numElements - 1;
@@ -53,22 +257,105 @@
 		
 		boxWidth = 100 / Math.ceil((Math.sqrt(numElements)));
 		$('.box').width(boxWidth+'%');
-		$('.box').height($('.box').width());
-	});
+		$('.box').height($('.box').width());  */
 	
 	presenceChannel.bind('client-tapped', function(data) {
 		date = new Date();
 		var latency = date.getTime() - data.timestamp;
-		var boxIndex = inputs.indexOf(data.id);
+		var elementIndex = inputs.indexOf(data.id);
 		
-		if(debug) {
-
-		    console.log('Event received! Latency: ' + latency);
-		    console.log("boxIndex: "+ boxIndex);
-		   	console.log('Color is ' + data.color);
+/*
+		var lineIndex = data.index;
+		var circleIndex = data.index - 1;
+*/
+		if(type == 'circles'){
+			if(debug) {
+	
+			    console.log('Event received! Latency: ' + latency);
+			    console.log("boxIndex: "+ elementIndex);
+			   	console.log('Color is ' + data.color);
+			}
+	
+			var boxX = data.xPos * ($('body').width() - $('.box').width()); //Math.floor(Math.random() * ($('body').width() - $('.box').width()));
+			var boxY = data.yPos * ($('body').height() - $('.box').width()); //Math.floor(Math.random() * ($('body').height() - $('.box').width()));
+			
+			console.log("boxX: "+ boxX);
+			console.log("boxY: "+ boxY);
+			console.log('color: '+ data.color);
+			console.log('boxWidth: '+ boxWidth);
+			console.log('#box-'+ elementIndex);
+			$('#box-'+elementIndex).css({ 'left' : boxX, 'top' : boxY, 'background-color' : data.color }).animate(
+			{
+				'opacity' : 0.75,
+				boxShadow: '0 0 50px #eee'
+			}, 100).animate(
+			{
+				'opacity' : 0,
+				boxShadow: '0 0 0px #eee'
+			}, 100);
 		}
-		var boxX = data.xPos * ($('body').width() - $('.box').width()); //Math.floor(Math.random() * ($('body').width() - $('.box').width()));
-		var boxY = data.yPos * ($('body').height() - $('.box').width()); //Math.floor(Math.random() * ($('body').height() - $('.box').width()));
+		
+	
+		/*CODE TO DISPLAY CIRCLES */
+		/* circleX line broken */
+		else if(type == 'balls'){
+			var circleX = Math.floor((($(window).width() * 0.2) / (numCircles + 1)) * (elementIndex + 1) + $('.circle').width() * elementIndex);
+			var circleY = $(window).height() - $('.circle').height();
+			console.log("circleX: "+ circleX);
+			console.log("circleY: "+ circleY);
+			console.log('color: '+ data.color);
+			console.log('circleDiameter:' + circleDiameter);
+			var remainder = circleIndex % 2;
+			if (remainder == 0) {
+				$('#circle-'+elementIndex).css({ 'left' : circleX, 'bottom' : circleY, 'background' : data.color });
+			/*	for (var i = 1; i >= 0; i-=0.05) { */
+					$('#circle-'+circleIndex).animate(
+					{
+						'bottom' : 0,
+					}, 200, 'swing').animate(
+					{
+						'bottom' : (circleY),
+					}, 200, 'swing');
+			/*	} */
+				$('#circle-'+elementIndex).animate( { bottom: circleY, }, 200);
+			} else {
+				$('#circle-'+elementIndex).css({ 'left' : circleX, 'bottom' : 0, 'background' : data.color });
+			/*	for (var i = 0; i <= 1; i+=0.05) { */
+					$('#circle-'+elementIndex).animate(
+					{
+						'bottom' : (circleY),
+					}, 200, 'swing').animate(
+					{
+						'bottom' : 0,
+					}, 200, 'swing');
+			/*	} */
+				$('#circle-'+elementIndex).animate( { bottom: 0, }, 200);
+			}
+		}
+		
+		/* CODE TO DISPLAY LINES */
+		else if( type == 'bars') {
+			var lineX = Math.floor((($(window).width() * 0.2) / (2 + numLines - 2)) * elementIndex + $('.line').width() * (elementIndex - 1));
+			var lineY = 0;
+			console.log("lineX: "+ lineX);
+			console.log("lineY: "+ lineY);
+			console.log('color: '+ data.color);
+			console.log('lineWidth: '+ lineWidth);
+			$('#line-'+elementIndex).css({ 'left' : lineX, 'bottom' : lineY, 'background-color' : data.color }).animate(
+			{
+				'opacity' : 1,
+				'height' : 400,
+			}, 400).animate(
+			{
+				'opacity' : 0,
+				'height' : 0,
+			}, 400);
+		}
+	});
+		/* CODE TO DISPLAY BOXES */
+	/*	var boxX = Math.floor(Math.random() * ($('body').width() - $('.box').width()));
+		var boxY = Math.floor(Math.random() * ($('body').height() - $('.box').width()));
+>>>>>>> e3be436e33416e5a5a7d83dbd16b0f82e66741ac
 		
 		console.log("boxX: "+ boxX);
 		console.log("boxY: "+ boxY);
@@ -82,8 +369,11 @@
 		{
 			'opacity' : 0,
 			boxShadow: '0 0 0px #eee'
-		}, 100);
-	});
+		}, 100); */
+		
+
+	
+	
 	/*
 function nrand() {
 		var x1, x2, rad;
