@@ -79,6 +79,20 @@ app.post('/pusher/auth', function(req, res){
 var visualizerClients = [];
 
 io.sockets.on('connection', function (socket) {
+	var address = socket.handshake.address;
+	console.log("New connection from " + address.address + ":" + address.port);
+	
+	socket.on('recentSearch', function() {
+		var recentVisualizers = [];
+		for( var i = 0; i < visualizerClients.length; i++ ) {
+			var visualizer = visualizerClients[i];
+			if ( visualizer.address == address.address ) {
+				recentVisualizers.push( { name: visualizer.name } );
+			}
+		}
+		socket.emit('recentFound', { visualizers : recentVisualizers });
+	});
+
 	socket.on('visualizerRequest', function(data) {
 		for(var i = 0; i < visualizerClients.length; i++) {
 			if(visualizerClients[i].name == data.name) {
@@ -87,7 +101,7 @@ io.sockets.on('connection', function (socket) {
 			}
 		}
 		console.log('+++++Visualizer created with id: ' + socket.id + ', name: ' + data.name + ', at longitude: ' + data.longitude + ', latitude: ' + data.latitude);
-		visualizerClients.push( { id: socket.id, name: data.name, type: data.type, longitude: data.longitude, latitude: data.latitude } );
+		visualizerClients.push( { address : address.address, id: socket.id, name: data.name, type: data.type, longitude: data.longitude, latitude: data.latitude } );
 		socket.emit('nameAccepted');
 	});
 	
@@ -107,7 +121,7 @@ io.sockets.on('connection', function (socket) {
 		}
 		socket.emit( 'visualizersFound', { visualizers: visualizersFound } );
 	});
-	socket.on('visualizerSearch', function(data) {
+	socket.on('requestType', function(data) {
 		var visualizersFound = [];
 		for( var i = 0; i < visualizerClients.length; i++ ) {
 			if ( visualizerClients[i].name == data.name ) {
@@ -115,38 +129,17 @@ io.sockets.on('connection', function (socket) {
 			}
 		}
 	});
-/*
-	if(clients.indexOf(socket.id) < 0)
-		clients.push(socket.id);
-*/
-	// send the clients id to the client itself.
-/*   	socket.emit('id', socket.id); 
-  	
-	io.sockets.emit('count', {
-		number: clients.length
-	});
-
-	*/
-	/*
-socket.on('trigger', function (data) {
-		var index = clients.indexOf(socket.id);
-		data.index = index;
-		io.sockets.emit('event', data);
-	});
 	
+/*
 	socket.on('disconnect', function () {
-	    console.log('-----Client disconnected.-----');
-	    console.log(socket.id);
-	    for( var i=0, len=clients.length; i<len; i++ ){
-			var c = clients[i];
-			if(c == socket.id){
-				clients.splice(i,1);
+		console.log('-----Client disconnected.-----');
+		console.log(socket.id);
+		for( var i=0, len = visualizerClients.length; i<len; i++ ){
+			if(visualizerClients[i].id == socket.id){
+				visualizerClients.splice(i,1);
 				break;
 			}
 		}
-		io.sockets.emit('count', {
-			number: clients.length
-		});
 	});
 */
 });

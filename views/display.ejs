@@ -1,21 +1,22 @@
 <div id="display-wrapper">
 	<div id="visualizer-wrapper">
-		<div id="circlesContainer" class="visualizer">
+		<div id="circles" class="visualizer">
 		</div>
-		<div id="barsContainer" class="visualizer">
+		<div id="bars" class="visualizer">
 		</div>
-		<div id="ballsContainer" class="visualizer">
+		<div id="balls" class="visualizer">
 		</div>
 	</div>
 	<div id="controls-wrapper">
 		<h1 class="visualizerName"><%= name %></h1>
 		<a href="#" data-role="button" data-rel="back" data-icon="arrow-l" id="display-back-button">Back</a>
 		<p id="display-instructions">Join this visualizer on a mobile device to contribute!</p>
-		<a href="#" data-role="button" id="fullscreen-button">Enter Full Screen</a>
+		<a href="#" data-role="button" class="fullscreen-button" id="enter-fullscreen">Enter Full Screen</a>
+		<a href="#" data-role="button" class="fullscreen-button" id="exit-fullscreen">Exit Full Screen</a>
 		<div id="display-radio-wrapper">
-			<a href="#circles" class="visualizer-radio" id="circles">Circles</a>
-			<a href="#bars" class="visualizer-radio" id="bars">Bars</a>
-			<a href="#balls" class="visualizer-radio" id="balls">Balls</a>
+			<a href="#circles" class="visualizer-radio" id="circles-link">Circles</a>
+			<a href="#bars" class="visualizer-radio" id="bars-link">Bars</a>
+			<a href="#balls" class="visualizer-radio" id="balls-link">Balls</a>
 		</div>
 	</div>
 </div>
@@ -33,80 +34,44 @@ var numInputs = 0,
 	numBars = 0,
 	numBalls = 0;
 
-var currentType = 'circles';
+var currentType = '#bars';
 
 var circleDiameter = 100;
 var barWidth = 80;
+var barHeight = 20;
 var ballDiameter = 80;
 
-// Initialize UI
-$(document).bind('pageload', function() {
-	$('#controls-wrapper').hide();
-});
-$(document).ready(function() {
-	$('#controls-wrapper').hide();
-});
-
-// Switch to fullscreen mode
-$('#fullscreen-button').click(function() {
-	var elem = document.getElementById('display-wrapper');
-	if (elem.requestFullScreen) {
-	  elem.requestFullScreen();
-	  return;
-	} else if (elem.mozRequestFullScreen) {
-	  elem.mozRequestFullScreen();
-	  return;
-	} else if (elem.webkitRequestFullScreen) {
-	  elem.webkitRequestFullScreen();
-	  return;
-	}
-});
-
-// Show controls on mouse move, tap
-var mouseToggle = true;
-var timerToggle = false;
-$(document).mousemove(function () {
-	if(mouseToggle){
-		mouseToggle = false;
-		$('#controls-wrapper').fadeIn(200);
-	}
-	
-	var onMouseStop = function () {
-		mouseToggle = true;
-		$('#controls-wrapper').fadeOut(200);
-	};
-	
-	clearTimeout(timerToggle);
-	timerToggle = setTimeout(onMouseStop, 800);
-});
-$(document).bind('tap', function() {
-	$('#controls-wrapper').fadeToggle(200);
-});
-
 var name = $('.visualizerName').html();
+// Get visualizer type selection from app
 socket.emit('requestType', { name : name });
 socket.on('typeIs', function(data) {
-	type = data.type;
+	currentType = data.type;
+});
+
+// Initialize UI
+$('#exit-fullscreen').hide();
+$('#controls-wrapper').hide();
+$('.visualizer').hide();
+$(document).bind('pageload', function() {
+	changeVisualizerType();
+});
+$(document).ready(function() {
+	changeVisualizerType();
 });
 
 // Change visualizer type
-function changeVisualizerType(type) {
-	switch(type) {
-		case 'circles':
-			$('#visualizer2').hide();
-			$('#visualizer3').hide();
-			break;
-		case 'bars':
-			$('#visualizer1').hide();
-			$('#visualizer3').hide();
-			break;
-		case 'balls':
-			$('#visualizer1').hide();
-			$('#visualizer2').hide();
-			break;
-		console.log('Error: invalid type given.');
-	}
+function changeVisualizerType() {
+	$('.visualizer').hide();
+	$(currentType).show();
 }
+
+$('.visualizer-radio').click( function(e) {
+	currentType = e.target.hash;
+	changeVisualizerType();
+	if (debug) {
+		console.log('Visualizer changed to: ' + currentType);
+	}
+});
 
 // Initialize Pusher
 var pusher = new Pusher('1c0d1fc18d1af207286e');
@@ -116,16 +81,19 @@ var inputs = [];
 presenceChannel.bind('pusher:subscription_succeeded', function(members) {
 	members.each(function(member) {
 		if(member.id != members.me.id) {
-			inputs.push(member.id);
+			inputs.push(parseInt(member.id));
 			if(debug) {
 				console.log('Member ID #' + member.id + ' added.');
 			}
+			numInputs++;
 		}
 	});
+	$('.visualizer').empty();
+	renumberElements(numInputs);
 });
 
 presenceChannel.bind('pusher_internal:member_added', function(member) {
-	inputs.push(member.user_id);
+	inputs.push(parseInt(member.user_id));
 	if(debug) {
 		console.log('Member ID #' + member.user_id + ' added.');
 	}
@@ -135,7 +103,7 @@ presenceChannel.bind('pusher_internal:member_added', function(member) {
 
 presenceChannel.bind('pusher_internal:member_removed', function(member) {
 	if(numInputs > 0) {
-		inputs.splice(inputs.indexOf(member.user_id), 1);
+		inputs.splice(inputs.indexOf(parseInt(member.user_id)), 1);
 		if(debug) {
 			console.log('Member ID #' + member.user_id + ' removed.');
 		}
@@ -144,17 +112,59 @@ presenceChannel.bind('pusher_internal:member_removed', function(member) {
 	}
 });
 
+// Switch to fullscreen mode. Utilizes jquery.fullscreen.js
+var isFullscreen;
+$(document).on("fullscreenchange", function() {
+   isFullscreen = !!$(document).fullScreen();
+   $('#enter-fullscreen, #exit-fullscreen').toggle();
+});
+$('.fullscreen-button').click(function() {
+	$(document).toggleFullScreen();
+});
+
+// Show controls on mouse move, tap
+var mouseToggle = true;
+var timerToggle = false;
+var pauseToggle = false;
+$(document).mousemove(function () {
+	if(mouseToggle){
+		mouseToggle = false;
+		$('#controls-wrapper').fadeIn(200).removeClass('no-cursor');
+	}
+	
+	var afterMouseStop = function () {
+		mouseToggle = true;
+	}
+	
+	var onMouseStop = function () {
+		$('#controls-wrapper').fadeOut(200).addClass('no-cursor');
+		clearTimeout(pauseToggle);
+		pauseToggle = setTimeout(afterMouseStop, 500);
+	};
+	
+	clearTimeout(timerToggle);
+	timerToggle = setTimeout(onMouseStop, 800);
+});
+
+$('#visualizer-wrapper').bind('tap', function() {
+	$('#controls-wrapper').fadeToggle(200);
+});
+$('#controls-wrapper').bind('tap', function() {
+	$('#controls-wrapper').fadeToggle(200);
+});
+$("#controls-wrapper a").bind('tap', function(e) {
+	e.stopPropagation();
+});
+
 function renumberElements() {
 	renumberCircles();
-/*
 	renumberBars();
-	renumberBalls();
-*/
+	//renumberBalls();
 }
 
 function renumberCircles() {
 	while(numCircles < numInputs) {
-		$('#visualizer1').append('<div class="circle" id="circle-'+numCircles+'"></div>')
+		$('#circles').append('<div class="circle" id="circle-'+numCircles+'"></div>')
 		numCircles++;
 	}
 	while(numCircles > numInputs) {
@@ -167,39 +177,42 @@ function renumberCircles() {
 		console.log('Number of circles: ' + numCircles);
 	}
 	
-	circleDiameter = 100 / Math.ceil((Math.sqrt(numCircles)));
-	$('.circle').width(circleDiameter+'%');
-	$('.circle').height($('.circle').width());
+	circleDiameter = 1 / Math.ceil((Math.sqrt(numCircles))) * $(document).width();
+	$('.circle').width(circleDiameter);
+	$('.circle').height(circleDiameter);
+	$('.circle').hide();
 }
 
-/*
 function renumberBars(number) {
-	while(number > numLines) {
-		$('#visualizer2').append('<div class="line" id="line-'+numLines+'"></div>');
-		numLines++;
-		console.log(numLines);
+	while(numBars < numInputs) {
+		$('#bars').append('<div class="bar" id="bar-'+numBars+'"></div>');
+		numBars++;
 	}
-	while(number < numLines) {
-		var removeLine = numLines - 1;
-		$('#line-'+removeLine).remove();
-		numLines--;
+	while(numBars > numInputs) {
+		var removeIndex = numBars - 1;
+		$('#bar-'+ removeIndex).remove();
+		numBars--;
 	}
 	if(debug) {
 		console.log('Number of inputs: ' + numInputs);
-		console.log('Number of lines: ' + numLines);
+		console.log('Number of bars: ' + numBars);
 	}
 	
-	lineWidth = 80 / (numLines - 1);
-	$('.line').width(lineWidth+'%');
-	$('.line').height(400);
+	barWidth = 80 / (numBars);
+	var barMargin = barWidth * .1;
+	var actualWidth = barWidth * .9;
+	console.log('New bar width: ' + barWidth);
+	$('.bar').width(actualWidth+'%').height(barHeight + '%').css({'margin-right' : barMargin + '%'});
+/* 	$('#bars').last().width(css({ 'margin-right' : 0 }); */
 }
 
+/*
 function renumberBalls(number) {
 	console.log("Number of data inputs is ");
 	console.log(numInputs);
 	
 	while(number > numCircles + 1) {
-		$('#visualizer3').append('<div class="circle" id="circle-'+numCircles+'"></div>');
+		$('#balls').append('<div class="circle" id="circle-'+numCircles+'"></div>');
 		numCircles++;
 		console.log(numCircles);
 	}
@@ -225,90 +238,94 @@ function renumberBalls(number) {
 presenceChannel.bind('client-tapped', function(data) {
 	date = new Date();
 	var latency = date.getTime() - data.timestamp;
-	var elementIndex = inputs.indexOf(data.id);
-	console.log('Client ID: ' + data.id);
-	console.log(inputs);
-/*
-	var lineIndex = data.index;
-	var circleIndex = data.index - 1;
-*/
-	if(currentType == 'circles'){
-		if(debug) {
-			console.log('Event received! Latency: ' + latency);
-			console.log("boxIndex: "+ elementIndex);
-			console.log('Color is ' + data.color);
-		}
+	var elementIndex = inputs.indexOf(parseInt(data.id));
+	if(debug) {
+		console.log('Event received!');
+		console.log('Client ID: ' + data.id);
+		console.log('Latency: ' + latency);
+		console.log(currentType);
+	}
+	if(currentType == '#circles'){
+		visualizeCircle(data, elementIndex);
+	}
+	else if(currentType == '#bars'){
+		visualizeBar(data, elementIndex);
+	}
+});
 
-		var circleX = data.xPos;// * ($('body').width() - $('.circle').width()); //Math.floor(Math.random() * ($('body').width() - $('.box').width()));
-		var circleY = data.yPos;// * ($('body').height() - $('.circle').height()); //Math.floor(Math.random() * ($('body').height() - $('.box').width()));
-		
-		console.log("boxX: "+ circleX);
-		console.log("boxY: "+ circleY);
-		console.log('color: '+ data.color);
-		console.log('boxWidth: '+ circleDiameter);
-		console.log('#box-'+ elementIndex);
-		$('#circle-'+elementIndex).css({ 'left' : circleX, 'top' : circleY, 'background-color' : data.color }).animate(
-		{
-			'opacity' : 0.75,
-			boxShadow: '0 0 50px #eee'
-		}, 100).animate(
-		{
-			'opacity' : 0,
-			boxShadow: '0 0 0px #eee'
-		}, 100);
-	}
-/*
-	else if( currentType == 'bars') {
-		var lineX = Math.floor((($(window).width() * 0.2) / (2 + numLines - 2)) * elementIndex + $('.line').width() * (elementIndex - 1));
-		var lineY = 0;
-		console.log("lineX: "+ lineX);
-		console.log("lineY: "+ lineY);
-		console.log('color: '+ data.color);
-		console.log('lineWidth: '+ lineWidth);
-		$('#line-'+elementIndex).css({ 'left' : lineX, 'bottom' : lineY, 'background-color' : data.color }).animate(
-		{
-			'opacity' : 1,
-			'height' : 400,
-		}, 400).animate(
-		{
-			'opacity' : 0,
-			'height' : 0,
-		}, 400);
-	}
-	else if(currentType == 'balls'){
-		var circleX = Math.floor((($(window).width() * 0.2) / (numCircles + 1)) * (elementIndex + 1) + $('.circle').width() * elementIndex);
-		var circleY = $(window).height() - $('.circle').height();
+function visualizeCircle(data, elementIndex) {
+	var circleX = data.xPos * ($('body').width() - $('.circle').width());
+	var circleY = data.yPos * ($('body').height() - $('.circle').height());
+
+	if(debug) {
+		console.log('Color is ' + data.color);
 		console.log("circleX: "+ circleX);
 		console.log("circleY: "+ circleY);
 		console.log('color: '+ data.color);
-		console.log('circleDiameter:' + circleDiameter);
-		var remainder = circleIndex % 2;
-		if (remainder == 0) {
-			$('#circle-'+elementIndex).css({ 'left' : circleX, 'bottom' : circleY, 'background' : data.color });
-			for (var i = 1; i >= 0; i-=0.05) { 
-				$('#circle-'+circleIndex).animate(
-				{
-					'bottom' : 0,
-				}, 200, 'swing').animate(
-				{
-					'bottom' : (circleY),
-				}, 200, 'swing');
-			} 
-			$('#circle-'+elementIndex).animate( { bottom: circleY, }, 200);
-		} else {
-			$('#circle-'+elementIndex).css({ 'left' : circleX, 'bottom' : 0, 'background' : data.color });
-			for (var i = 0; i <= 1; i+=0.05) {
-				$('#circle-'+elementIndex).animate(
-				{
-					'bottom' : (circleY),
-				}, 200, 'swing').animate(
-				{
-					'bottom' : 0,
-				}, 200, 'swing');
-			}
-			$('#circle-'+elementIndex).animate( { bottom: 0, }, 200);
-		}
+		console.log('circleDiameter: '+ circleDiameter);
+		console.log('#circle-'+ elementIndex);
+	}	
+	
+	$('#circle-'+elementIndex).css({ 'left' : circleX, 'top' : circleY, 'background-color' : data.color }).show().fadeOut(300);
+}
+
+function visualizeBar(data, elementIndex) {
+	var barPos = 70; // Defined in CSS file
+	var barY = (1 - data.yPos) * 50 + barHeight;
+	var newBarPos = barPos - barY + barHeight;
+	$('#bar-'+ elementIndex ).animate(
+	{
+		'height' : barY + '%',
+		'top' : newBarPos + '%'
+	}, 100).css({ 'background-color' : data.color }).animate(
+	{
+		'height' : barHeight + '%',
+		'top' : barPos + '%'
+	}, 300);
+	
+	if(debug) {
+		console.log('Color is ' + data.color);
+		console.log("barY: "+ barY);
+		console.log('color: '+ data.color);
+		console.log('#bar-'+ elementIndex);
 	}
+}
+
+/*
+function visualizeBall(data, elementIndex) {
+	var circleX = Math.floor((($(window).width() * 0.2) / (numCircles + 1)) * (elementIndex + 1) + $('.circle').width() * elementIndex);
+	var circleY = $(window).height() - $('.circle').height();
+	console.log("circleX: "+ circleX);
+	console.log("circleY: "+ circleY);
+	console.log('color: '+ data.color);
+	console.log('circleDiameter:' + circleDiameter);
+	var remainder = circleIndex % 2;
+	if (remainder == 0) {
+		$('#circle-'+elementIndex).css({ 'left' : circleX, 'bottom' : circleY, 'background' : data.color });
+		for (var i = 1; i >= 0; i-=0.05) { 
+			$('#circle-'+circleIndex).animate(
+			{
+				'bottom' : 0,
+			}, 200, 'swing').animate(
+			{
+				'bottom' : (circleY),
+			}, 200, 'swing');
+		} 
+		$('#circle-'+elementIndex).animate( { bottom: circleY, }, 200);
+	} else {
+		$('#circle-'+elementIndex).css({ 'left' : circleX, 'bottom' : 0, 'background' : data.color });
+		for (var i = 0; i <= 1; i+=0.05) {
+			$('#circle-'+elementIndex).animate(
+			{
+				'bottom' : (circleY),
+			}, 200, 'swing').animate(
+			{
+				'bottom' : 0,
+			}, 200, 'swing');
+		}
+		$('#circle-'+elementIndex).animate( { bottom: 0, }, 200);
+	}
+}
 */
-});
+
 </script>

@@ -70,6 +70,14 @@
 		presenceChannel.trigger('client-tapped', { id : presenceChannel.members.me.id, color : color, xPos : xPos, yPos : yPos, timestamp : date.getTime() } );
 		$('.feedback-overlay').css({ 'background-color' : color }).show().fadeOut(200);
 	});
+	$(window).bind('shake', function() {
+		date = new Date();
+		var xPos = Math.random();
+		var yPos = Math.random();
+		console.log('xPos: ' + xPos + ' yPos: ' + yPos);
+		presenceChannel.trigger('client-tapped', { id : presenceChannel.members.me.id, color : color, xPos : xPos, yPos : yPos, timestamp : date.getTime() } );
+		$('.feedback-overlay').css({ 'background-color' : color }).show().fadeOut(200);
+	});
 	
 	// Color slider values
 	var offset = ($('.color-indicator').width() / 2) + 10 - 14;

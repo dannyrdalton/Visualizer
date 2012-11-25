@@ -9,19 +9,23 @@
 		<p>Sorry, this visualizer name is already taken. Please choose another.<p>
 	</div>
 	<form id="visualizer-form" method="POST" action="mainpage" data-ajax="false">
-		<fieldset data-role="controlgroup" data-type="horizontal" >
-			<input type="radio" name="radio-choice" id="radio-choice1" value="circles" checked="checked" />
+		<fieldset data-role="controlgroup" data-type="horizontal" id="visualizer-type">
+			<input type="radio" name="radio-choice" id="radio-choice1" value="#circles" checked="checked" />
          	<label for="radio-choice1">Circles</label>
 
-         	<input type="radio" name="radio-choice" id="radio-choice2" value="bars"  />
-         	<label for="radio-choice2">EQ Bars</label>
+         	<input type="radio" name="radio-choice" id="radio-choice2" value="#bars"  />
+         	<label for="radio-choice2">Equalizer Bars</label>
 
-         	<input type="radio" name="radio-choice" id="radio-choice3" value="balls"  />
+<!--
+         	<input type="radio" name="radio-choice" id="radio-choice3" value="#balls"  />
          	<label for="radio-choice3">Balls</label>
+-->
 		</fieldset>
 		<input placeholder="Name your visualizer" id="visualizer-name" type="text" />
 		<input type="submit" value="Start visualizer"  />
 	</form>
+	<h3 id="recentTitle">Your Recent Visualizers</h3>
+	<ul data-role="listview" data-inset="true" id="recentVisualizers"></ul>
 </div>
 
 <script type="text/javascript">
@@ -29,7 +33,16 @@
 	var socket = io.connect(window.location.hostname);
 	var longitude;
 	var latitude;
-	var type = 'circles';
+	var type = '#circles';
+	
+	$(document).bind('pageload', function() {
+		$('#recentTitle').hide();
+		socket.emit('recentSearch');
+	});
+	$(document).ready(function() {
+		$('#recentTitle').hide();
+		socket.emit('recentSearch');
+	});
 	
 	navigator.geolocation.getCurrentPosition(successCallback,errorCallback,{timeout:10000});
 
@@ -38,20 +51,34 @@
 		latitude = position.coords.latitude;
 		console.log('longitude: ' + longitude);
 		console.log('latitude: ' + latitude);
-		
 	}
 	
 	function errorCallback() {
-		alert('Cannot get location!');
+		alert('Cannot get location! Try enabling location services in your browser.');
 	}
 
 	var name = '';
-
+	
+	socket.on('recentFound', function(data) {
+		console.log(data.visualizers.length);
+		if (data.visualizers.length > 0) {
+			$('#recentTitle').show();
+			$('#recentVisualizers').empty();
+			for( var i = 0, len = data.visualizers.length; i < len; i++) {
+				$('#recentVisualizers').append( '<li><a href="/display/' + data.visualizers[i].name + '" data-role="button" class="input-link">' + data.visualizers[i].name + '</a></li>');
+				$('#recentVisualizers').listview('refresh');
+			}
+		}
+		$("#joinableVisualizers a").click(function () {
+			$.mobile.changePage($(this).attr('href'), { transition: 'slide' } );
+		});
+	});
+	
 	$("#visualizer-form").bind('submit', function (event) {
 		event.preventDefault();
 		name = $('#visualizer-name').val();
-/* 		type = $('#visualizer-form:radio:checked').val(); */
-/* 		console.log(type); */
+		type = $('input:radio[name=radio-choice]:checked').val();
+		console.log(type);
 		socket.emit('visualizerRequest', { name : name, type : type, longitude : longitude, latitude : latitude });
 	});
 	socket.on('nameAlreadyTaken', function() {
@@ -61,13 +88,5 @@
 		var url = '/display/' + name;
 		$.mobile.changePage(url, { transition: 'slide' } );
 	});
-	
-
-	$("#radio-circles").click(function () {
-		console.log("CIRCLES!");
-	});
-	
-/* CAROUSEL JAVASCRIPT */
-
 
 </script>
