@@ -1,9 +1,16 @@
 <div data-role="header" data-theme="a">
-	<h1>Visualizer</h1>
+	<!-- <h1>Visualizer</h1> -->
+	<a href="#introPopup" data-role="button" data-rel="popup" data-icon="info" data-iconpos="notext" >Instructions</a>
+</div>
+<div data-role="popup" id="introPopup" >
+	<p>With this visualizer app, you can host or join a collaborative visualizer.</p>
+	<p>Join a visualizer in your vicinity, and tap or shake your device to the beat.</p>
+	<p>Or, start your own visualizer and get other people to join and contribute!</p>
 </div>
 
 <div class="content" data-theme="a">
 	<div class="content-wrapper">
+		<img src="/img/instrumental.png" id="home-screen-image" />
 		<a href='' data-role="button" id="join-link" >Join a Visualizer</a>
 		<a href='' data-role="button" id="create-link" >Host a Visualizer</a>
 	</div>
@@ -17,6 +24,8 @@
 	$("#join-link").click(function () {
 		$.mobile.changePage('/join', { transition: 'slide' } );
 	});
+	
+/* 	$('#introPopup').popup({ positionTo: "window" }); */
 </script>
 
 </body>
