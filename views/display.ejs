@@ -276,7 +276,10 @@ function visualizeCircle(data, elementIndex) {
 
 function visualizeBar(data, elementIndex) {
 	var barPos = 70; // Defined in CSS file
-	var barY = (1 - data.yPos) * 70 + barHeight;
+	var barY = 60 + barHeight;
+	if(data.input == 'tap') {
+		barY = (1 - data.yPos) * 60 + barHeight;
+	}
 	var newBarPos = barPos - barY + barHeight;
 	$('#bar-'+ elementIndex ).animate(
 	{
