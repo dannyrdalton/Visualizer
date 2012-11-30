@@ -163,7 +163,7 @@ $("#controls-wrapper a").bind('tap', function(e) {
 function renumberElements() {
 	renumberCircles();
 	renumberBars();
-	//renumberBalls();
+	renumberBalls();
 }
 
 function renumberCircles() {
@@ -211,34 +211,33 @@ function renumberBars(number) {
 	$('#bar-0').css({ 'margin-left' : leftBarMargin + '%'});
 }
 
-/*
+
 function renumberBalls(number) {
-	console.log("Number of data inputs is ");
-	console.log(numInputs);
+	console.log("Number of data inputs is " + numInputs);
 	
-	while(number > numCircles + 1) {
-		$('#balls').append('<div class="circle" id="circle-'+numCircles+'"></div>');
-		numCircles++;
-		console.log(numCircles);
+	while(numBalls < numInputs) {
+		$('#balls').append('<div class="ball" id="ball-'+numBalls+'"></div>');
+		numBalls++;
 	}
-	while(number < numCircles + 1) {
-		var removeCircle = numCircles - 1;
-		console.log("remove circle is ");
-		console.log(removeCircle);
-		$('#circle-'+removeCircle).remove();
-		numCircles--;
+	while(numBalls > numInputs) {
+		var removeBall = numBalls - 1;
+		console.log("remove Ball is ");
+		console.log(removeBall);
+		$('#ball-'+removeBall).remove();
+		numBalls--;
 	}
 	if(debug) {
-		console.log('Number of inputs: ' + number);
-		console.log('Number of circles: ' + numCircles);
+		console.log('Number of inputs: ' + numInputs);
+		console.log('Number of balls: ' + numBalls);
 	}
-	circleDiameter = ($(window).width() * 0.8) / numCircles;
-	$('.circle').width(circleDiameter);
-	$('.circle').height(circleDiameter);
-	$('.circle').css({ '-webkit-border-radius' : 50+'%', '-moz-border-radius' : (circleDiameter/2)+'%' });
+	ballDiameter = ($(window).width() * 0.8) / numBalls;
+	var ballMargin = ballDiameter * .1;
+	var actualDiameter = ballDiameter * .9;
+	var ballY = ($(window).height() * 0.5) - (ballDiameter / 2);
+	$('.ball').width(ballDiameter).height(ballDiameter).css({'margin-right' : ballMargin, 'top' : ballY});
+
 
 }
-*/
 
 presenceChannel.bind('client-tapped', function(data) {
 	date = new Date();
@@ -255,6 +254,9 @@ presenceChannel.bind('client-tapped', function(data) {
 	}
 	else if(currentType == '#bars'){
 		visualizeBar(data, elementIndex);
+	}
+	else if(currentType == '#balls') {
+		visualizeBall(data, elementIndex);
 	}
 });
 
@@ -299,41 +301,27 @@ function visualizeBar(data, elementIndex) {
 	}
 }
 
-/*
+
 function visualizeBall(data, elementIndex) {
-	var circleX = Math.floor((($(window).width() * 0.2) / (numCircles + 1)) * (elementIndex + 1) + $('.circle').width() * elementIndex);
-	var circleY = $(window).height() - $('.circle').height();
-	console.log("circleX: "+ circleX);
-	console.log("circleY: "+ circleY);
-	console.log('color: '+ data.color);
-	console.log('circleDiameter:' + circleDiameter);
-	var remainder = circleIndex % 2;
+	console.log("YPos is " + data.yPos);
+	var remainder = elementIndex % 2;
+	console.log("R = " + remainder);
+	$('#ball-'+elementIndex).css({ 'background-color' : data.color });
 	if (remainder == 0) {
-		$('#circle-'+elementIndex).css({ 'left' : circleX, 'bottom' : circleY, 'background' : data.color });
-		for (var i = 1; i >= 0; i-=0.05) { 
-			$('#circle-'+circleIndex).animate(
-			{
-				'bottom' : 0,
-			}, 200, 'swing').animate(
-			{
-				'bottom' : (circleY),
-			}, 200, 'swing');
-		} 
-		$('#circle-'+elementIndex).animate( { bottom: circleY, }, 200);
-	} else {
-		$('#circle-'+elementIndex).css({ 'left' : circleX, 'bottom' : 0, 'background' : data.color });
-		for (var i = 0; i <= 1; i+=0.05) {
-			$('#circle-'+elementIndex).animate(
-			{
-				'bottom' : (circleY),
-			}, 200, 'swing').animate(
-			{
-				'bottom' : 0,
-			}, 200, 'swing');
-		}
-		$('#circle-'+elementIndex).animate( { bottom: 0, }, 200);
+		var ballY = ($(window).height() * 0.5) - (ballDiameter / 2);
+		$('#ball-'+elementIndex).animate( { top: (ballY - ballY * data.yPos) }, 200).animate( { top: ballY }, 200);
+	}
+	if (remainder == 1) {
+		var ballY = ($(window).height() * 0.5) - (ballDiameter / 2);
+		var ballAnimateY = $(window).height() - ballDiameter;
+		$('#ball-'+elementIndex).animate( { top: ballY + ballY * data.yPos }, 200).animate( { top: ballY }, 200);
+	}
+	if(debug) {
+				console.log('color: '+ data.color);
+		console.log("ballY: "+ ballY);
+		console.log('circleDiameter:' + circleDiameter);
 	}
 }
-*/
+
 
 </script>
