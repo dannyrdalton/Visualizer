@@ -34,7 +34,7 @@ var numInputs = 0,
 	numBars = 0,
 	numBalls = 0;
 
-var currentType = '#bars';
+var currentType = '#circles';
 
 var circleDiameter = 100;
 var barWidth = 80;
@@ -46,6 +46,10 @@ var name = $('.visualizerName').html();
 socket.emit('requestType', { name : name });
 socket.on('typeIs', function(data) {
 	currentType = data.type;
+	if (debug) {
+		console.log('Server indicated type: ' + currentType);
+	}
+	changeVisualizerType();
 });
 
 // Initialize UI
@@ -199,11 +203,12 @@ function renumberBars(number) {
 	}
 	
 	barWidth = 80 / (numBars);
-	var barMargin = barWidth * .1;
+	var barMargin = barWidth * .05;
 	var actualWidth = barWidth * .9;
 	console.log('New bar width: ' + barWidth);
-	$('.bar').width(actualWidth+'%').height(barHeight + '%').css({'margin-right' : barMargin + '%'});
-/* 	$('#bars').last().width(css({ 'margin-right' : 0 }); */
+	$('.bar').width(actualWidth+'%').height(barHeight + '%').css({'margin-right' : barMargin + '%', 'margin-left' : barMargin + '%'});
+	var leftBarMargin = 10 + barMargin;
+	$('#bar-0').css({ 'margin-left' : leftBarMargin + '%'});
 }
 
 
@@ -273,7 +278,10 @@ function visualizeCircle(data, elementIndex) {
 
 function visualizeBar(data, elementIndex) {
 	var barPos = 70; // Defined in CSS file
-	var barY = (1 - data.yPos) * 50 + barHeight;
+	var barY = 60 + barHeight;
+	if(data.input == 'tap') {
+		barY = (1 - data.yPos) * 60 + barHeight;
+	}
 	var newBarPos = barPos - barY + barHeight;
 	$('#bar-'+ elementIndex ).animate(
 	{

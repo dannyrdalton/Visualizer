@@ -157,7 +157,7 @@ body {
 }
 
 .ui-btn {
-	max-width: 600px;
+	max-width: 960px;
 	margin: 20px auto;
 }
 
@@ -168,7 +168,7 @@ body {
 }
 
 .ui-content .ui-listview-inset {
-	max-width: 600px;
+	max-width: 960px;
 	margin: 0 auto;
 }
 
@@ -178,6 +178,10 @@ body {
 }
 */
 
+.popup {
+	padding: 10px 20px;
+}
+
 /* Create Style */
 
 .ui-controlgroup {
@@ -185,13 +189,13 @@ body {
 }
 
 #visualizer-form input {
-	max-width: 400px;
+	max-width: 960px;
  	margin: 0px auto;
 	margin-bottom: 30px;
 }
 
 #visualizer-form .ui-btn {
-	max-width: 400px;
+	max-width: 960px;
 	margin: 0 auto;
 }
 
@@ -202,6 +206,16 @@ fieldset.ui-controlgroup {
 #recentTitle {
 	text-align: center;
 	margin: 50px 0 20px;
+}
+
+/* Index Style */
+
+#home-screen-image {
+	max-width: 100%;
+	margin: 20px auto;
+	position: relative;
+	display: block;
+	
 }
 
 /* Join Style */
@@ -221,7 +235,7 @@ fieldset.ui-controlgroup {
 }
 
 #input-instructions {
-	margin: 60px 0 0 30px;
+	margin: 60px 0 30px;
 	z-index: 2;
 	text-align: center;
 }

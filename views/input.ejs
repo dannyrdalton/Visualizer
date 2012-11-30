@@ -1,11 +1,17 @@
 <div data-role="header" data-theme="a">
 	<h1 class="visualizerName"><%= name %></h1>
-	<a href="#" data-role="button" data-rel="back" data-icon="arrow-l">Back</a>
+	<a href="#" data-role="button" data-rel="back" data-icon="arrow-l" data-iconpos="notext" >Back</a>
+	<a href="#instructionsPopup" data-role="button" data-rel="popup" data-icon="info" data-iconpos="notext" >Instructions</a>
+</div>
+<div data-role="popup" id="instructionsPopup">
+	<p>Tap or shake your phone to the beat!</p>
+	<p>Your input contributes to the collaborative visualizer you've joined.</p>
+	<p>Feel free to change your color with the slider below.</p>
 </div>
 
 <div data-role="content" role="main" data-theme="a">
 	<div id="input-wrapper">
-		<p id="input-instructions">Tap or shake your phone to the beat!</p>
+<!-- 		<p id="input-instructions">Tap or shake your phone to the beat!</p> -->
 		<div class="input-overlay"></div>
 		<div class="feedback-overlay"></div>
 		<div class="color-slider">
@@ -67,7 +73,7 @@
 		var xPos = x / $(window).width();
 		var yPos = y / $(window).height();
 		console.log('xPos: ' + xPos + ' yPos: ' + yPos);
-		presenceChannel.trigger('client-tapped', { id : presenceChannel.members.me.id, color : color, xPos : xPos, yPos : yPos, timestamp : date.getTime() } );
+		presenceChannel.trigger('client-tapped', { id : presenceChannel.members.me.id, color : color, xPos : xPos, yPos : yPos, timestamp : date.getTime(), input : 'tap' } );
 		$('.feedback-overlay').css({ 'background-color' : color }).show().fadeOut(200);
 	});
 	$(window).bind('shake', function() {
@@ -75,7 +81,7 @@
 		var xPos = Math.random();
 		var yPos = Math.random();
 		console.log('xPos: ' + xPos + ' yPos: ' + yPos);
-		presenceChannel.trigger('client-tapped', { id : presenceChannel.members.me.id, color : color, xPos : xPos, yPos : yPos, timestamp : date.getTime() } );
+		presenceChannel.trigger('client-tapped', { id : presenceChannel.members.me.id, color : color, xPos : xPos, yPos : yPos, timestamp : date.getTime(), input : 'shake'} );
 		$('.feedback-overlay').css({ 'background-color' : color }).show().fadeOut(200);
 	});
 	
