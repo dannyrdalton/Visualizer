@@ -124,10 +124,14 @@ io.sockets.on('connection', function (socket) {
 	socket.on('requestType', function(data) {
 		var visualizersFound = [];
 		for( var i = 0; i < visualizerClients.length; i++ ) {
+			console.log('Type is: ' + visualizerClients[i].type);
 			if ( visualizerClients[i].name == data.name ) {
+				console.log('Found type, type is: ' + visualizerClients[i].type);
 				socket.emit('typeIs', { type : visualizerClients[i].type } );
+				return;
 			}
 		}
+		console.log('Did not find type');
 	});
 	
 /*

@@ -178,6 +178,10 @@ body {
 }
 */
 
+.popup {
+	padding: 10px 20px;
+}
+
 /* Create Style */
 
 .ui-controlgroup {
