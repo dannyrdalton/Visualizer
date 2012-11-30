@@ -150,7 +150,7 @@ io.sockets.on('connection', function (socket) {
 */
 });
 
-var maxDistance = 2; // in km
+var maxDistance = 10; // in km
 
 function withinProximity( lon1, lat1, lon2, lat2 ) {
 	console.log('lon1: ' + lon1 + ' lat1: ' + lat1 + ' lon2:' + lon2 + ' lat2: ' + lat2 );
