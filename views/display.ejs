@@ -303,16 +303,18 @@ function visualizeBar(data, elementIndex) {
 
 
 function visualizeBall(data, elementIndex) {
+	console.log("YPos is " + data.yPos);
 	var remainder = elementIndex % 2;
 	console.log("R = " + remainder);
+	$('#ball-'+elementIndex).css({ 'background-color' : data.color });
 	if (remainder == 0) {
 		var ballY = ($(window).height() * 0.5) - (ballDiameter / 2);
-		$('#ball-'+elementIndex).animate( { top: 0 }, 200).animate( { top: ballY }, 200);
+		$('#ball-'+elementIndex).animate( { top: (ballY - ballY * data.yPos) }, 200).animate( { top: ballY }, 200);
 	}
 	if (remainder == 1) {
 		var ballY = ($(window).height() * 0.5) - (ballDiameter / 2);
 		var ballAnimateY = $(window).height() - ballDiameter;
-		$('#ball-'+elementIndex).animate( { top: ballAnimateY }, 200).animate( { top: ballY }, 200);
+		$('#ball-'+elementIndex).animate( { top: ballY + ballY * data.yPos }, 200).animate( { top: ballY }, 200);
 	}
 	if(debug) {
 				console.log('color: '+ data.color);
