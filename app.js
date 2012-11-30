@@ -86,6 +86,8 @@ io.sockets.on('connection', function (socket) {
 		var recentVisualizers = [];
 		for( var i = 0; i < visualizerClients.length; i++ ) {
 			var visualizer = visualizerClients[i];
+			console.log('Request address: ' + address.address);
+			console.log('Stored adddress: ' + visualizer.address);
 			if ( visualizer.address == address.address ) {
 				recentVisualizers.push( { name: visualizer.name } );
 			}
@@ -148,7 +150,7 @@ io.sockets.on('connection', function (socket) {
 */
 });
 
-var maxDistance = 10;
+var maxDistance = 2; // in km
 
 function withinProximity( lon1, lat1, lon2, lat2 ) {
 	console.log('lon1: ' + lon1 + ' lat1: ' + lat1 + ' lon2:' + lon2 + ' lat2: ' + lat2 );
@@ -159,14 +161,5 @@ function withinProximity( lon1, lat1, lon2, lat2 ) {
 	console.log('The two locations are ' + d + ' km apart.');
 	return d < maxDistance;
 }
-
-var channel = 'lobby';
-var event = 'message';
-var data = {
-  from: 'Jaewoong',
-  content: 'Hello, World'
-};
-
-/* pusher.trigger(channel, event, data); */
 
 
