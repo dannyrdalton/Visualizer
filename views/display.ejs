@@ -244,7 +244,7 @@ function renumberBalls(number) {
 		console.log('Number of inputs: ' + numInputs);
 		console.log('Number of balls: ' + numBalls);
 	}
-	ballDiameter = ($(window).width() * 0.8) / numBalls;
+	ballDiameter = ($(window).height() * 0.8) / numBalls;
 	var ballMargin = ballDiameter * .1;
 	var actualDiameter = ballDiameter * .9;
 	var ballY = ($(window).height() * 0.5) - (ballDiameter / 2);
