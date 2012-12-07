@@ -247,7 +247,7 @@ function renumberBalls(number) {
 	ballDiameter = ($(window).height() * 0.8) / numBalls;
 	var ballMargin = ballDiameter * .1;
 	var actualDiameter = ballDiameter * .9;
-	var ballY = ($(window).height() * 0.5) - (ballDiameter / 2);
+	var ballY = ($(window).width() * 0.5) - (ballDiameter / 2);
 	$('.ball').width(ballDiameter).height(ballDiameter).css({'margin-right' : ballMargin, 'top' : ballY});
 
 
