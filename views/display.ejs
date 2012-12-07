@@ -14,9 +14,9 @@
 		<a href="#" data-role="button" class="fullscreen-button" id="enter-fullscreen">Enter Full Screen</a>
 		<a href="#" data-role="button" class="fullscreen-button" id="exit-fullscreen">Exit Full Screen</a>
 		<div id="display-radio-wrapper">
-			<a href="#circles" class="visualizer-radio" id="circles-link">Circles</a>
-			<a href="#bars" class="visualizer-radio" id="bars-link">Bars</a>
-			<a href="#balls" class="visualizer-radio" id="balls-link">Balls</a>
+			<a href="#circles" class="visualizer-radio" id="circles-link"><img src="/img/circles-thumbnail.png" /></a>
+			<a href="#bars" class="visualizer-radio" id="bars-link"><img src="/img/bars-thumbnail.png" /></a>
+			<a href="#balls" class="visualizer-radio" id="balls-link"><img src="/img/balls-thumbnail.png" /></a>
 		</div>
 	</div>
 </div>
@@ -67,10 +67,24 @@ $(document).ready(function() {
 function changeVisualizerType() {
 	$('.visualizer').hide();
 	$(currentType).show();
+	console.log(currentType);
+	$('.visualizer-radio').removeClass('radio-active');
+	
+	if(currentType == '#circles') {
+		$('#circles-link').addClass('radio-active');
+	}
+	
+	if(currentType == '#bars') {
+		$('#bars-link').addClass('radio-active');
+	}
+	
+	if(currentType == '#balls') {
+		$('#balls-link').addClass('radio-active');
+	}
 }
 
-$('.visualizer-radio').click( function(e) {
-	currentType = e.target.hash;
+$('.visualizer-radio').click( function() {
+	currentType = $(this).attr('href');
 	changeVisualizerType();
 	if (debug) {
 		console.log('Visualizer changed to: ' + currentType);
