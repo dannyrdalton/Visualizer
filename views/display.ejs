@@ -195,7 +195,7 @@ function renumberCircles() {
 		console.log('Number of circles: ' + numCircles);
 	}
 	
-	circleDiameter = 1 / Math.ceil((Math.sqrt(numCircles))) * $(document).width();
+	circleDiameter = 1 / Math.ceil((Math.sqrt(numCircles))) * $(document).height();
 	$('.circle').width(circleDiameter);
 	$('.circle').height(circleDiameter);
 	$('.circle').hide();
